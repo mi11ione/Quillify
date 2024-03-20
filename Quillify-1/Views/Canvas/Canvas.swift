@@ -351,13 +351,12 @@ class ImageRenderView: UIView, UIGestureRecognizerDelegate {
         // Scale the image that is being converted
         let point = sender.translation(in: self)
         
-        var translation = CGAffineTransform.init(translationX: point.x, y: point.y)
         let updatePan = {
-            var currentTool = self.state.currentTool
+            var _ = self.state.currentTool
         }
         
         let applyPan = {
-            var currentTool = self.state.currentTool
+            var _ = self.state.currentTool
         }
         
         switch sender.state {

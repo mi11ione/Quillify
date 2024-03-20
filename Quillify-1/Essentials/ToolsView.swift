@@ -112,7 +112,7 @@ struct LearnToolsView: View {
                                 .foregroundColor(.accentColor)
                                 .padding(.bottom, 3)
                             
-                            Text("Стирает вашу красоту, с этим и так все понятно")
+                            Text("Стирает вашу красоту, все понятно")
                                 .multilineTextAlignment(.leading)
                                 .foregroundColor(.primary)
                         }
@@ -129,7 +129,7 @@ struct LearnToolsView: View {
                                 .foregroundColor(.accentColor)
                                 .padding(.bottom, 3)
                             
-                            Text("Хотите передвинуть, удалить или поменять цвет?")
+                            Text("Незаменимая, крутая вещь")
                                 .multilineTextAlignment(.leading)
                                 .foregroundColor(.primary)
                         }

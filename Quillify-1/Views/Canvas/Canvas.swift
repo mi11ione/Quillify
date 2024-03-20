@@ -203,7 +203,7 @@ class Canvas: UIViewController, PKCanvasViewDelegate, UIGestureRecognizerDelegat
         }
     }
     
-    /// Find where the center of the screen is in canvas space
+    // Find where the center of the screen is in canvas space
     func getCenterScreenCanvasPosition() async -> CGPoint {
         let contentOffset = self.canvasView.contentOffset
         return CGPoint(x: contentOffset.x + (self.view.bounds.width / 2),
@@ -349,7 +349,6 @@ class ImageRenderView: UIView, UIGestureRecognizerDelegate {
     @objc
     func handlePan(_ sender: UIPanGestureRecognizer) -> Void {
         // Scale the image that is being converted
-        let point = sender.translation(in: self)
         
         let updatePan = {
             var _ = self.state.currentTool

@@ -1,6 +1,6 @@
 //
 //  WelcomeView.swift
-//  Quillify-1
+//  Quillify
 //
 //  Created by mi11ion on 19/3/24.
 //

@@ -1,6 +1,6 @@
 //
 //  CanvasDrawView.swift
-//  Quillify-1
+//  Quillify
 //
 //  Created by mi11ion on 19/3/24.
 //
@@ -37,6 +37,8 @@ struct CanvasDrawView: View {
     var body: some View {
         ZStack{
             LibraryPhotoPickerView(windowState: windowState)
+            CameraScanView(windowState: windowState)
+            ExamplePhotosView(windowState: windowState)
             Rectangle()
                 .foregroundColor(Color(uiColor: UIColor.systemGray6))
                 .transition(.opacity)
@@ -83,6 +85,37 @@ struct CanvasDrawView: View {
                     .frame(minWidth: nil, idealWidth: toolWidth, maxWidth: toolWidth, minHeight: nil, idealHeight: 70, maxHeight: 70, alignment: .center)
                     .transition(.opacity.combined(with: .move(edge: self.horizontalSizeClass == .compact ? .bottom : .top)))
                     .zIndex(1)
+                    .padding(.horizontal)
+                }
+                if let imageConversion = windowState.imageConversion {
+                    ZStack {
+                        if imageConversion.isConversionFinished {
+                            Button(action: {
+                                windowState.placeImage()
+                            }) {
+                                Text("Разместить")
+                                    .font(.headline)
+                                    .bold()
+                                    .foregroundColor(Color(uiColor: UIColor.systemBackground))
+                                    .padding()
+                                    .frame(width: 200)
+                                    .background(Color.accentColor)
+                                    .cornerRadius(.greatestFiniteMagnitude)
+                            }
+                        } else {
+                            Text("Конвертируем")
+                                .foregroundColor(.accentColor)
+                                .font(.headline)
+                                .bold()
+                                .padding()
+                                .background(
+                                    Rectangle().fill(Color(uiColor: UIColor.systemGray6))
+                                        .blur(radius: 10)
+                                )
+                        }
+                    }
+                    .frame(minWidth: nil, idealWidth: toolWidth, maxWidth: toolWidth, minHeight: nil, idealHeight: 70, maxHeight: 70, alignment: .center)
+                    .zIndex(2)
                     .padding(.horizontal)
                 }
                 if horizontalSizeClass != .compact {

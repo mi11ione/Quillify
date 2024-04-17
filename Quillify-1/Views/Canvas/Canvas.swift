@@ -1,23 +1,23 @@
 //
 //  Canvas.swift
-//  Quillify-1
+//  Quillify
 //
 //  Created by mi11ion on 19/3/24.
 //
 
 import CoreGraphics
 import Combine
+import Foundation
 import SwiftUI
 import PencilKit
 
 class Canvas: UIViewController, PKCanvasViewDelegate, UIGestureRecognizerDelegate {
-    // Huge canvas
+    // Really large canvas!
     static var canvasSize: CGSize = CGSize(width: 10_000, height: 10_000)
-    
     var state: WindowState
-    private var cancellables = Set<AnyCancellable>()
     
-    private var didScrollToOffset = false
+    var didScrollToOffset = false
+    var cancellables = Set<AnyCancellable>()
     
     // Workaround to get approximate selection
     var selectionGestureRecognizer: UIPanGestureRecognizer?
@@ -41,8 +41,8 @@ class Canvas: UIViewController, PKCanvasViewDelegate, UIGestureRecognizerDelegat
         let canvas = PKCanvasView()
         canvas.translatesAutoresizingMaskIntoConstraints = false
         canvas.backgroundColor = .systemGray6
-        canvas.minimumZoomScale = 1.0
-        canvas.maximumZoomScale = 2.0
+        canvas.minimumZoomScale = 1
+        canvas.maximumZoomScale = 1
         canvas.zoomScale = 1
         canvas.showsVerticalScrollIndicator = false
         canvas.showsHorizontalScrollIndicator = false
@@ -203,7 +203,7 @@ class Canvas: UIViewController, PKCanvasViewDelegate, UIGestureRecognizerDelegat
         }
     }
     
-    // Find where the center of the screen is in canvas space
+    /// Find where the center of the screen is in canvas space
     func getCenterScreenCanvasPosition() async -> CGPoint {
         let contentOffset = self.canvasView.contentOffset
         return CGPoint(x: contentOffset.x + (self.view.bounds.width / 2),
@@ -289,7 +289,7 @@ class ImageRenderView: UIView, UIGestureRecognizerDelegate {
         self.backgroundColor = .clear
         
         // If the current tool changes, update the number of touches required
-        // to trigger the pan gesture to allow the tools to be in use
+        // to trigger the pan gesture to allow the tools to be used
         let toolChange = state.$currentTool.sink(receiveValue: { [weak self] tool in
             if tool == .touch || tool == .placePhoto {
                 self?.panGesture?.isEnabled = true
@@ -335,11 +335,25 @@ class ImageRenderView: UIView, UIGestureRecognizerDelegate {
             }
         }
         
+        let applyScale = {
+            switch self.state.currentTool {
+            case .placePhoto:
+                self.imageScale = .identity
+                self.state.imageConversion?.applyScale(transform: transform)
+            default:
+                break
+            }
+        }
+        
         switch sender.state {
         case .began:
             updateScale()
         case .changed:
             updateScale()
+        case .cancelled:
+            applyScale()
+        case .ended:
+            applyScale()
         default:
             break
         }
@@ -349,13 +363,21 @@ class ImageRenderView: UIView, UIGestureRecognizerDelegate {
     @objc
     func handlePan(_ sender: UIPanGestureRecognizer) -> Void {
         // Scale the image that is being converted
+        let point = sender.translation(in: self)
         
+        let translation = CGAffineTransform.init(translationX: point.x, y: point.y)
         let updatePan = {
-            var _ = self.state.currentTool
+            let currentTool = self.state.currentTool
+            if currentTool == .placePhoto {
+                self.imageTranslation = translation
+            }
         }
         
         let applyPan = {
-            var _ = self.state.currentTool
+            let currentTool = self.state.currentTool
+            if currentTool == .placePhoto {
+                self.finishPhotoTranslate(translation)
+            }
         }
         
         switch sender.state {
@@ -375,6 +397,11 @@ class ImageRenderView: UIView, UIGestureRecognizerDelegate {
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         true
+    }
+    
+    private func finishPhotoTranslate(_ translation: CGAffineTransform) {
+        self.state.imageConversion?.applyTranslate(transform: translation)
+        self.imageTranslation = .identity
     }
     
     override func draw(_ rect: CGRect) {

@@ -1,6 +1,6 @@
 //
 //  LibraryPhotoPicker.swift
-//  Quillify-1
+//  Quillify
 //
 //  Created by mi11ion on 19/3/24.
 //
@@ -53,6 +53,9 @@ class LibraryPhotoPicker: UIViewController, PHPickerViewControllerDelegate {
         guard let result = results.first else { return }
         result.itemProvider.loadObject(ofClass: UIImage.self) { [weak self] photo, error in
             guard let self = self, let image = photo as? UIImage else { return }
+            Task { @MainActor in
+                await self.state.startConversion(image: image)
+            }
         }
     }
 }

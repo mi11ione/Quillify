@@ -1,6 +1,6 @@
 //
-//  Quillify_1App.swift
-//  Quillify-1
+//  QuillifyApp.swift
+//  Quillify
 //
 //  Created by mi11ion on 19/3/24.
 //
@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct Quillify_1App: App {
+struct QuillifyApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()

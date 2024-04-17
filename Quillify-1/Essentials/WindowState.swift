@@ -1,6 +1,6 @@
 //
 //  WindowState.swift
-//  Quillify-1
+//  Quillify
 //
 //  Created by mi11ion on 19/3/24.
 //
@@ -108,6 +108,32 @@ class WindowState: ObservableObject {
     
     func removePaths(_ removeSet: Set<Int>) {
         self.canvas?.removeStrokes(removeSet)
+    }
+    
+    func startConversion(image: UIImage) async {
+        let centerScreen = await self.canvas?.getCenterScreenCanvasPosition() ?? CGPoint(x: 0, y: 0)
+        let conversion = ImageConversion(image: image, position: centerScreen)
+        // Begin background conversion
+        conversion.convert()
+        self.imageConversion = conversion
+        // Subscribe to this image conversion's updates
+        self.imageCancellable = conversion.objectWillChange.sink(receiveValue: { _ in
+            Task { @MainActor in
+                self.objectWillChange.send()
+            }
+        })
+        Task { @MainActor in
+            withAnimation { self.currentTool = .placePhoto }
+        }
+    }
+    
+    /// Adds the image conversion paths to the canvas
+    func placeImage() {
+        guard let imageConversion = imageConversion else { return }
+        let imagePaths = imageConversion.getStrokes()
+        self.addStrokes(strokes: imagePaths)
+        withAnimation { self.currentTool = .pen }
+        self.imageConversion = nil
     }
 }
 
@@ -275,5 +301,26 @@ class ImageConversion: ObservableObject {
     
     func applyScale(transform: CGAffineTransform) {
         self.scaleTransform = self.scaleTransform.concatenating(transform)
+    }
+    
+    /// Start the path conversion of this image
+    func convert() {
+        Task {
+            let convertedPaths = ImagePathConverter(image: image).findPaths()
+            self.paths = convertedPaths.map { $0 }
+        }
+    }
+    
+    /// Generate strokes from the converted path data
+    func getStrokes() -> [PKStroke] {
+        guard let paths = self.paths else { return [] }
+        return paths.map { points, color in
+            let transformedPoints = points.map { point -> PKStrokePoint in
+                let transformed = point.applying(transform)
+                return PKStrokePoint(location: transformed, timeOffset: 0, size: CGSize(width: 3, height: 3), opacity: 1, force: 2, azimuth: 0, altitude: 0)
+            }
+            let path = PKStrokePath(controlPoints: transformedPoints, creationDate: Date())
+            return PKStroke(ink: PKInk(.pen, color: color), path: path, transform: .identity, mask: nil)
+        }
     }
 }

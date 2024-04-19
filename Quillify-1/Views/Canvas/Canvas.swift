@@ -5,27 +5,27 @@
 //  Created by mi11ion on 19/3/24.
 //
 
-import CoreGraphics
 import Combine
+import CoreGraphics
 import Foundation
-import SwiftUI
 import PencilKit
+import SwiftUI
 
 class Canvas: UIViewController, PKCanvasViewDelegate, UIGestureRecognizerDelegate {
     // Really large canvas!
-    static var canvasSize: CGSize = CGSize(width: 10_000, height: 10_000)
+    static var canvasSize: CGSize = .init(width: 10000, height: 10000)
     var state: WindowState
-    
+
     var didScrollToOffset = false
     var cancellables = Set<AnyCancellable>()
-    
+
     // Workaround to get approximate selection
     var selectionGestureRecognizer: UIPanGestureRecognizer?
     var selectMinX: CGFloat?
     var selectMaxX: CGFloat?
     var selectMinY: CGFloat?
     var selectMaxY: CGFloat?
-    
+
     var selectRect: CGRect? {
         guard let selectMinX = selectMinX,
               let selectMaxX = selectMaxX,
@@ -34,9 +34,9 @@ class Canvas: UIViewController, PKCanvasViewDelegate, UIGestureRecognizerDelegat
         return CGRect(x: selectMinX, y: selectMinY,
                       width: abs(selectMaxX - selectMinX), height: abs(selectMaxY - selectMinY))
     }
-    
+
     var imageRenderView: ImageRenderView?
-    
+
     let canvasView: PKCanvasView = {
         let canvas = PKCanvasView()
         canvas.translatesAutoresizingMaskIntoConstraints = false
@@ -50,11 +50,11 @@ class Canvas: UIViewController, PKCanvasViewDelegate, UIGestureRecognizerDelegat
         canvas.drawingPolicy = UIPencilInteraction.prefersPencilOnlyDrawing ? .default : .anyInput
         return canvas
     }()
-    
+
     var strokes: [PKStroke] {
-        self.canvasView.drawing.strokes
+        canvasView.drawing.strokes
     }
-    
+
     init(state: WindowState) {
         self.state = state
         super.init(nibName: nil, bundle: nil)
@@ -91,7 +91,7 @@ class Canvas: UIViewController, PKCanvasViewDelegate, UIGestureRecognizerDelegat
             }
         }
         cancellables.insert(changeToolCancellable)
-        
+
         let colorCancellable = state.$currentColor.sink { [weak self] color in
             guard let self = self else { return }
             if state.currentTool == .pen {
@@ -99,90 +99,90 @@ class Canvas: UIViewController, PKCanvasViewDelegate, UIGestureRecognizerDelegat
                 self.canvasView.tool = PKInkingTool(.pen, color: color.pencilKitColor)
             }
         }
-        
+
         cancellables.insert(colorCancellable)
-        
     }
-    
+
     @available(*, unavailable)
-    required init?(coder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.handleTap(_:)))
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
         tapGesture.delegate = self
-        self.view.addSubview(canvasView)
-        
+        view.addSubview(canvasView)
+
         let constraints = [
-            canvasView.topAnchor.constraint(equalTo: self.view.topAnchor),
-            canvasView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            canvasView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-            canvasView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+            canvasView.topAnchor.constraint(equalTo: view.topAnchor),
+            canvasView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            canvasView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            canvasView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ]
         NSLayoutConstraint.activate(constraints)
         canvasView.addGestureRecognizer(tapGesture)
-        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(self.handlePan(_:)))
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
         panGesture.delegate = self
-        self.view.addGestureRecognizer(panGesture)
-        
-        let imageRenderView = ImageRenderView(state: state, canvas: canvasView, frame: self.view.bounds)
+        view.addGestureRecognizer(panGesture)
+
+        let imageRenderView = ImageRenderView(state: state, canvas: canvasView, frame: view.bounds)
         imageRenderView.isUserInteractionEnabled = false
         self.imageRenderView = imageRenderView
         imageRenderView.translatesAutoresizingMaskIntoConstraints = false
         let imageViewConstraints = [
-            imageRenderView.topAnchor.constraint(equalTo: self.view.topAnchor),
-            imageRenderView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            imageRenderView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-            imageRenderView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+            imageRenderView.topAnchor.constraint(equalTo: view.topAnchor),
+            imageRenderView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            imageRenderView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            imageRenderView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ]
-        self.view.addSubview(imageRenderView)
+        view.addSubview(imageRenderView)
         NSLayoutConstraint.activate(imageViewConstraints)
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        self.scrollToInitialOffsetIfRequired()
+        scrollToInitialOffsetIfRequired()
     }
-    
+
     private func scrollToInitialOffsetIfRequired() {
         if !didScrollToOffset {
             let offsetX = (canvasView.contentSize.width - canvasView.frame.width) / 2
             let offsetY = (canvasView.contentSize.height - canvasView.frame.height) / 2
-            self.canvasView.contentOffset = CGPoint(x: offsetX, y: offsetY)
+            canvasView.contentOffset = CGPoint(x: offsetX, y: offsetY)
             didScrollToOffset = true
         }
     }
-    
+
     @objc
-    func handlePan(_ sender: UIPanGestureRecognizer) -> Void {
+    func handlePan(_ sender: UIPanGestureRecognizer) {
         guard state.currentTool == .selection else {
-            self.selectionOver()
+            selectionOver()
             return
         }
-        
-        let point = sender.location(in: self.canvasView)
-        
+
+        let point = sender.location(in: canvasView)
+
         switch sender.state {
         case .began:
-            self.updateSelectRect(point)
+            updateSelectRect(point)
         case .changed:
-            self.updateSelectRect(point)
+            updateSelectRect(point)
         case .cancelled:
-            self.finishSelection()
+            finishSelection()
         case .ended:
-            self.finishSelection()
+            finishSelection()
         default:
             break
         }
     }
-    
+
     private func updateSelectRect(_ translatedPoint: CGPoint) {
         guard let selectMinX = selectMinX,
               let selectMaxX = selectMaxX,
               let selectMinY = selectMinY,
-              let selectMaxY = selectMaxY else {
+              let selectMaxY = selectMaxY
+        else {
             selectMinX = translatedPoint.x
             selectMaxX = translatedPoint.x
             selectMinY = translatedPoint.y
@@ -194,80 +194,77 @@ class Canvas: UIViewController, PKCanvasViewDelegate, UIGestureRecognizerDelegat
         self.selectMinY = min(selectMinY, translatedPoint.y)
         self.selectMaxY = max(selectMaxY, translatedPoint.y)
     }
-    
+
     @objc
-    func handleTap(_ sender: UITapGestureRecognizer) -> Void {
+    func handleTap(_ sender: UITapGestureRecognizer) {
         if sender.state == .ended {
-            withAnimation{ self.state.isShowingPenColorPicker = false }
-            withAnimation{ self.state.selection = nil }
+            withAnimation { self.state.isShowingPenColorPicker = false }
+            withAnimation { self.state.selection = nil }
         }
     }
-    
+
     /// Find where the center of the screen is in canvas space
     func getCenterScreenCanvasPosition() async -> CGPoint {
-        let contentOffset = self.canvasView.contentOffset
-        return CGPoint(x: contentOffset.x + (self.view.bounds.width / 2),
-                       y: contentOffset.y + (self.view.bounds.height / 2))
+        let contentOffset = canvasView.contentOffset
+        return CGPoint(x: contentOffset.x + (view.bounds.width / 2),
+                       y: contentOffset.y + (view.bounds.height / 2))
     }
-    
-    
+
     // Update selection
     private func finishSelection() {
         if state.currentTool == .selection {
-            if let selectRect = self.selectRect {
+            if let selectRect = selectRect {
                 var selection = Set<Int>()
-                for (index, path) in self.canvasView.drawing.strokes.enumerated() {
+                for (index, path) in canvasView.drawing.strokes.enumerated() {
                     if selectRect.intersects(path.renderBounds) {
                         selection.insert(index)
                     }
                 }
                 if !selection.isEmpty {
-                    withAnimation{ self.state.selection = selection }
+                    withAnimation { self.state.selection = selection }
                 }
-                self.selectionOver()
+                selectionOver()
             }
         }
     }
-    
+
     private func selectionOver() {
-        self.selectMinX = nil
-        self.selectMaxX = nil
-        self.selectMinY = nil
-        self.selectMaxY = nil
+        selectMinX = nil
+        selectMaxX = nil
+        selectMinY = nil
+        selectMaxY = nil
     }
-    
+
     func addStrokes(_ strokes: [PKStroke]) {
-        self.canvasView.drawing.strokes.append(contentsOf: strokes)
+        canvasView.drawing.strokes.append(contentsOf: strokes)
     }
-    
+
     func updateStrokes(_ strokes: [(Int, PKStroke)]) {
-        var indexToStroke = [Int : PKStroke]()
+        var indexToStroke = [Int: PKStroke]()
         for (index, stroke) in strokes {
             indexToStroke[index] = stroke
         }
-        
-        var newStrokes = self.canvasView.drawing.strokes
+
+        var newStrokes = canvasView.drawing.strokes
         for index in newStrokes.indices {
             if let stroke = indexToStroke[index] {
                 newStrokes[index] = stroke
             }
         }
-        self.canvasView.drawing.strokes = newStrokes
-        
+        canvasView.drawing.strokes = newStrokes
     }
-    
+
     func removeStrokes(_ strokes: Set<Int>) {
-        self.canvasView.drawing.strokes = self.canvasView.drawing.strokes.enumerated().filter { index, stroke in
+        canvasView.drawing.strokes = canvasView.drawing.strokes.enumerated().filter { index, _ in
             !strokes.contains(index)
         }.map { _, stroke in
-            return stroke
+            stroke
         }
     }
-    
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+
+    func gestureRecognizer(_: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith _: UIGestureRecognizer) -> Bool {
         true
     }
-    
 }
 
 class ImageRenderView: UIView, UIGestureRecognizerDelegate {
@@ -275,19 +272,19 @@ class ImageRenderView: UIView, UIGestureRecognizerDelegate {
     // Image resizing
     private var imageScale: CGAffineTransform = .identity
     private var imageTranslation: CGAffineTransform = .identity
-    
+
     // Move image with gestures
     var pinchGesture: UIPinchGestureRecognizer?
     var panGesture: UIPanGestureRecognizer?
     private var cancellables = Set<AnyCancellable>()
     private var canvasView: PKCanvasView
-    
+
     init(state: WindowState, canvas: PKCanvasView, frame: CGRect) {
         self.state = state
-        self.canvasView = canvas
+        canvasView = canvas
         super.init(frame: frame)
-        self.backgroundColor = .clear
-        
+        backgroundColor = .clear
+
         // If the current tool changes, update the number of touches required
         // to trigger the pan gesture to allow the tools to be used
         let toolChange = state.$currentTool.sink(receiveValue: { [weak self] tool in
@@ -297,33 +294,33 @@ class ImageRenderView: UIView, UIGestureRecognizerDelegate {
                 self?.panGesture?.isEnabled = false
             }
         })
-        
+
         let stateChange = state.objectWillChange.sink(receiveValue: { [weak self] _ in
             self?.setNeedsDisplay()
         })
-        
-        self.cancellables.insert(toolChange)
-        self.cancellables.insert(stateChange)
-        
+
+        cancellables.insert(toolChange)
+        cancellables.insert(stateChange)
+
         let pinch = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(_:)))
         pinch.delegate = self
-        
-        self.pinchGesture = pinch
-        self.addGestureRecognizer(pinch)
+
+        pinchGesture = pinch
+        addGestureRecognizer(pinch)
         let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
         pan.delegate = self
         pan.allowedScrollTypesMask = [.all]
-        self.panGesture = pan
-        self.addGestureRecognizer(pan)
+        panGesture = pan
+        addGestureRecognizer(pan)
     }
-    
+
     @available(*, unavailable)
-    required init?(coder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     @objc
-    func handlePinch(_ sender: UIPinchGestureRecognizer) -> Void {
+    func handlePinch(_ sender: UIPinchGestureRecognizer) {
         // Scale the image that is being converted
         let transform = CGAffineTransform(scaleX: sender.scale, y: sender.scale)
         let updateScale = {
@@ -334,7 +331,7 @@ class ImageRenderView: UIView, UIGestureRecognizerDelegate {
                 break
             }
         }
-        
+
         let applyScale = {
             switch self.state.currentTool {
             case .placePhoto:
@@ -344,7 +341,7 @@ class ImageRenderView: UIView, UIGestureRecognizerDelegate {
                 break
             }
         }
-        
+
         switch sender.state {
         case .began:
             updateScale()
@@ -357,29 +354,29 @@ class ImageRenderView: UIView, UIGestureRecognizerDelegate {
         default:
             break
         }
-        self.setNeedsDisplay()
+        setNeedsDisplay()
     }
-    
+
     @objc
-    func handlePan(_ sender: UIPanGestureRecognizer) -> Void {
+    func handlePan(_ sender: UIPanGestureRecognizer) {
         // Scale the image that is being converted
         let point = sender.translation(in: self)
-        
-        let translation = CGAffineTransform.init(translationX: point.x, y: point.y)
+
+        let translation = CGAffineTransform(translationX: point.x, y: point.y)
         let updatePan = {
             let currentTool = self.state.currentTool
             if currentTool == .placePhoto {
                 self.imageTranslation = translation
             }
         }
-        
+
         let applyPan = {
             let currentTool = self.state.currentTool
             if currentTool == .placePhoto {
                 self.finishPhotoTranslate(translation)
             }
         }
-        
+
         switch sender.state {
         case .began:
             updatePan()
@@ -392,27 +389,27 @@ class ImageRenderView: UIView, UIGestureRecognizerDelegate {
         default:
             break
         }
-        self.setNeedsDisplay()
+        setNeedsDisplay()
     }
-    
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+
+    func gestureRecognizer(_: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith _: UIGestureRecognizer) -> Bool {
         true
     }
-    
+
     private func finishPhotoTranslate(_ translation: CGAffineTransform) {
-        self.state.imageConversion?.applyTranslate(transform: translation)
-        self.imageTranslation = .identity
+        state.imageConversion?.applyTranslate(transform: translation)
+        imageTranslation = .identity
     }
-    
-    override func draw(_ rect: CGRect) {
+
+    override func draw(_: CGRect) {
         // Convert screen rect to canvas space
         guard let context = UIGraphicsGetCurrentContext() else { return }
-        
+
         // Draw the image that's being placed
         if let imageConversion = state.imageConversion {
             let size = imageConversion.image.size
             // Find the correct position in this view's space
-            var rect: CGRect = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+            var rect = CGRect(x: 0, y: 0, width: size.width, height: size.height)
             rect = rect.applying(imageConversion.scaleTransform)
             rect = rect.applying(imageScale)
             rect = rect.applying(imageConversion.translateTransform)

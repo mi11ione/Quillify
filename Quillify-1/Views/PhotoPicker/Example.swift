@@ -5,28 +5,26 @@
 //  Created by mi11ion on 17/4/24.
 //
 
-import SwiftUI
 import Combine
+import SwiftUI
 
 class ExamplePhotos {
-    static var photos: [UIImage] = {
-        [ UIImage(named: "example1.heic"),
-          UIImage(named: "example2.jpg"),
-          UIImage(named: "example3.jpg"),
-          UIImage(named: "example4.jpg")].compactMap { $0 }
-    }()
+    static var photos: [UIImage] = [UIImage(named: "example1.heic"),
+                                    UIImage(named: "example2.jpg"),
+                                    UIImage(named: "example3.jpg"),
+                                    UIImage(named: "example4.jpg")].compactMap { $0 }
 }
 
 struct ExamplePhotosNavigationView: View {
     @ObservedObject var windowState: WindowState
     let photoColumns = [GridItem](repeating: GridItem(.flexible(), spacing: 1), count: 3)
-    
+
     var body: some View {
         NavigationView {
             VStack {
                 LazyVGrid(columns: photoColumns, spacing: 1) {
                     ForEach(ExamplePhotos.photos, id: \.self) { image in
-                        Button(action: { self.convert(image: image) } ) {
+                        Button(action: { convert(image: image) }) {
                             Rectangle()
                                 .aspectRatio(1, contentMode: .fit)
                                 .overlay(
@@ -44,21 +42,21 @@ struct ExamplePhotosNavigationView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Отменить", action: { self.cancel() })
+                    Button("Отменить", action: { cancel() })
                 }
             }
         }
         .navigationViewStyle(.stack)
     }
-    
+
     func cancel() {
-        self.windowState.photoMode = .none
+        windowState.photoMode = .none
     }
-    
+
     func convert(image: UIImage) {
-        self.windowState.photoMode = .none
+        windowState.photoMode = .none
         Task { @MainActor in
-            await self.windowState.startConversion(image: image)
+            await windowState.startConversion(image: image)
         }
     }
 }
@@ -67,13 +65,13 @@ class ExamplePhotosController: UIViewController {
     var state: WindowState
     var picker: UIHostingController<ExamplePhotosNavigationView>?
     var cancellable: AnyCancellable? = nil
-    
+
     init(windowState: WindowState) {
-        self.state = windowState
+        state = windowState
         super.init(nibName: nil, bundle: nil)
-        self.cancellable = state.$photoMode.sink(receiveValue: { [weak self] mode in
+        cancellable = state.$photoMode.sink(receiveValue: { [weak self] mode in
             guard let self = self else { return }
-            if mode == .example  {
+            if mode == .example {
                 let picker = UIHostingController(rootView: ExamplePhotosNavigationView(windowState: windowState))
                 self.picker = picker
                 self.present(picker, animated: true)
@@ -82,9 +80,9 @@ class ExamplePhotosController: UIViewController {
             }
         })
     }
-    
+
     @available(*, unavailable)
-    required init?(coder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }
@@ -92,12 +90,12 @@ class ExamplePhotosController: UIViewController {
 struct ExamplePhotosView: UIViewControllerRepresentable {
     typealias UIViewControllerType = ExamplePhotosController
     var windowState: WindowState
-    
-    func makeUIViewController(context: Context) -> ExamplePhotosController {
+
+    func makeUIViewController(context _: Context) -> ExamplePhotosController {
         ExamplePhotosController(windowState: windowState)
     }
-    
-    func updateUIViewController(_ uiViewController: ExamplePhotosController, context: Context) {
+
+    func updateUIViewController(_: ExamplePhotosController, context _: Context) {
         // ignore
     }
 }

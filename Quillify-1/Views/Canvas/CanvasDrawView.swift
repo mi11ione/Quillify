@@ -12,30 +12,30 @@ struct CanvasDrawView: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.colorScheme) var colorScheme
     @State var showingFinalizeView: Bool = false
-    
+
     let colorColumns = [
-        GridItem(.adaptive(minimum: 30))
+        GridItem(.adaptive(minimum: 30)),
     ]
-    
+
     // Get the first three colors that are in the selection
     var selectionColorIndices: [(index: Int, color: UIColor)] {
-        let colors = Array(windowState.selectionColors).enumerated().filter { index, color in
+        let colors = Array(windowState.selectionColors).enumerated().filter { index, _ in
             index < 3
-        }.map { $0.1 }
+        }.map(\.1)
         return Array(zip(colors.indices, colors))
     }
-    
+
     var hasSelection: Bool {
         windowState.selection != nil
     }
-    
+
     // Give adequate space to 3 vs 5 tools
     var toolWidth: CGFloat {
         hasSelection ? 250 : 400
     }
-    
+
     var body: some View {
-        ZStack{
+        ZStack {
             LibraryPhotoPickerView(windowState: windowState)
             CameraScanView(windowState: windowState)
             ExamplePhotosView(windowState: windowState)
@@ -46,13 +46,13 @@ struct CanvasDrawView: View {
             CanvasView(windowState: windowState)
                 .transition(.opacity)
                 .ignoresSafeArea()
-            VStack{
+            VStack {
                 if horizontalSizeClass == .compact {
                     Spacer()
-                    self.penColorPicker()
+                    penColorPicker()
                         .zIndex(0)
                         .padding()
-                    self.selectionColorPicker()
+                    selectionColorPicker()
                         .zIndex(0)
                         .padding()
                 }
@@ -64,26 +64,26 @@ struct CanvasDrawView: View {
                             Spacer()
                             if windowState.currentTool != .placePhoto {
                                 if !hasSelection {
-                                    self.controls()
+                                    controls()
                                 }
-                                Button(action: {selectionAction()}) {
+                                Button(action: { selectionAction() }) {
                                     Image(systemName: "lasso")
                                         .font(.largeTitle)
                                         .foregroundColor(windowState.currentTool == .selection ? .primary : .secondary)
                                         .frame(width: 50)
                                 }
                                 .accessibilityLabel("Выделение")
-                                .accessibility(addTraits: self.windowState.currentTool == .selection ? .isSelected : [])
+                                .accessibility(addTraits: windowState.currentTool == .selection ? .isSelected : [])
                                 if hasSelection {
                                     Spacer()
-                                    self.selectionControls()
+                                    selectionControls()
                                 }
                             }
                             Spacer()
                         }
                     }
                     .frame(minWidth: nil, idealWidth: toolWidth, maxWidth: toolWidth, minHeight: nil, idealHeight: 70, maxHeight: 70, alignment: .center)
-                    .transition(.opacity.combined(with: .move(edge: self.horizontalSizeClass == .compact ? .bottom : .top)))
+                    .transition(.opacity.combined(with: .move(edge: horizontalSizeClass == .compact ? .bottom : .top)))
                     .zIndex(1)
                     .padding(.horizontal)
                 }
@@ -119,10 +119,10 @@ struct CanvasDrawView: View {
                     .padding(.horizontal)
                 }
                 if horizontalSizeClass != .compact {
-                    self.penColorPicker()
+                    penColorPicker()
                         .zIndex(0)
                         .padding()
-                    self.selectionColorPicker()
+                    selectionColorPicker()
                         .zIndex(0)
                         .padding()
                     Spacer()
@@ -130,18 +130,18 @@ struct CanvasDrawView: View {
             }
         }
     }
-    
+
     @ViewBuilder func controls() -> some View {
-        Button(action: {windowState.currentTool = .touch}) {
+        Button(action: { windowState.currentTool = .touch }) {
             Image(systemName: "hand.point.up")
                 .font(.largeTitle)
                 .foregroundColor(windowState.currentTool == .touch ? .primary : .secondary)
                 .frame(width: 50)
         }
         .accessibilityLabel("Касание")
-        .accessibility(addTraits: self.windowState.currentTool == .touch ? .isSelected : [])
+        .accessibility(addTraits: windowState.currentTool == .touch ? .isSelected : [])
         Spacer()
-        Button(action: {penAction()}) {
+        Button(action: { penAction() }) {
             ZStack {
                 Image(systemName: "pencil.tip")
                     .font(.largeTitle)
@@ -150,7 +150,7 @@ struct CanvasDrawView: View {
                 Image(systemName: "pencil.tip")
                     .font(.largeTitle)
                     .foregroundColor(Color(uiColor: windowState.currentColor.color))
-                    .mask(VStack{
+                    .mask(VStack {
                         Rectangle()
                             .foregroundColor(.white)
                             .frame(height: 15)
@@ -162,22 +162,22 @@ struct CanvasDrawView: View {
         }
         .accessibilityLabel("Pen")
         .accessibilityValue(Text(windowState.currentColor.name(isDark: colorScheme == .dark)))
-        .accessibility(addTraits: self.windowState.currentTool == .pen ? .isSelected : [])
+        .accessibility(addTraits: windowState.currentTool == .pen ? .isSelected : [])
         Spacer()
         Menu {
             Button(action: {
-                self.windowState.photoMode = .cameraScan
+                windowState.photoMode = .cameraScan
             }) {
                 Label("Сканирование", systemImage: "viewfinder")
             }
             Button(action: {
-                self.windowState.photoMode = .library
+                windowState.photoMode = .library
             }) {
                 Label("Галерея", systemImage: "photo.fill")
             }
-            
+
             Button(action: {
-                self.windowState.photoMode = .example
+                windowState.photoMode = .example
             }) {
                 Label("Демо", systemImage: "photo.on.rectangle.angled")
             }
@@ -185,64 +185,62 @@ struct CanvasDrawView: View {
             Image(systemName: "photo")
                 .font(.largeTitle)
                 .foregroundColor(.accentColor)
-            
                 .frame(width: 50)
         }
         .accessibilityLabel("Добавить фото")
         Spacer()
-        Button(action: {windowState.currentTool = .remove}) {
-            ZStack{
+        Button(action: { windowState.currentTool = .remove }) {
+            ZStack {
                 Image(systemName: "scribble")
                     .font(.largeTitle)
                     .foregroundColor(windowState.currentTool == .remove ? .primary : .secondary)
                 Image(systemName: "line.diagonal")
                     .font(.largeTitle)
                     .foregroundColor(windowState.currentTool == .remove ? Color.red : Color(uiColor: UIColor.systemGray3))
-                
             }
             .frame(width: 50)
         }
         .accessibilityLabel("Убрать")
-        .accessibility(addTraits: self.windowState.currentTool == .remove ? .isSelected : [])
+        .accessibility(addTraits: windowState.currentTool == .remove ? .isSelected : [])
         Spacer()
     }
-    
+
     @ViewBuilder func penColorPicker() -> some View {
-        if self.windowState.isShowingPenColorPicker {
+        if windowState.isShowingPenColorPicker {
             LazyVGrid(columns: colorColumns, spacing: 15) {
                 ForEach(SemanticColor.allCases, id: \.self) { color in
-                    Button(action: { self.windowState.currentColor = color  }) {
+                    Button(action: { windowState.currentColor = color }) {
                         RoundedRectangle(cornerRadius: 5, style: .continuous)
                             .foregroundColor(Color(uiColor: color.color))
                             .frame(width: 30, height: 30)
-                            .overlay{
+                            .overlay {
                                 RoundedRectangle(cornerRadius: 5, style: .continuous)
-                                    .stroke(Color.accentColor, lineWidth: self.windowState.currentColor == color ? 3 : 0)
+                                    .stroke(Color.accentColor, lineWidth: windowState.currentColor == color ? 3 : 0)
                             }
                     }
                     .accessibilityLabel(Text(color.name(isDark: colorScheme == .dark)))
-                    .accessibility(addTraits: self.windowState.currentColor == color ? .isSelected : [])
+                    .accessibility(addTraits: windowState.currentColor == color ? .isSelected : [])
                 }
             }
             .padding()
-            .background{
+            .background {
                 RoundedRectangle(cornerRadius: 20, style: .continuous)
                     .foregroundColor(Color(uiColor: .systemGray5))
             }
             .frame(minWidth: nil, idealWidth: 200, maxWidth: 200, alignment: .center)
-            .transition(.scale.combined(with: .opacity).combined(with: .move(edge: self.horizontalSizeClass == .compact ? .bottom : .top)))
+            .transition(.scale.combined(with: .opacity).combined(with: .move(edge: horizontalSizeClass == .compact ? .bottom : .top)))
         }
     }
-    
+
     @ViewBuilder func selectionColorPicker() -> some View {
-        if self.windowState.isShowingSelectionColorPicker {
+        if windowState.isShowingSelectionColorPicker {
             LazyVGrid(columns: colorColumns, spacing: 15) {
                 ForEach(SemanticColor.allCases, id: \.self) { color in
-                    Button(action: { try? self.windowState.recolorSelection(newColor: color) }) {
+                    Button(action: { try? windowState.recolorSelection(newColor: color) }) {
                         RoundedRectangle(cornerRadius: 5, style: .continuous)
                             .foregroundColor(Color(uiColor: color.color))
                             .frame(width: 30, height: 30)
-                            .overlay{
+                            .overlay {
                                 RoundedRectangle(cornerRadius: 5, style: .continuous)
                                     .stroke(Color.accentColor, lineWidth: selectionIsColor(color) ? 3 : 0)
                             }
@@ -252,24 +250,24 @@ struct CanvasDrawView: View {
                 }
             }
             .padding()
-            .background{
+            .background {
                 RoundedRectangle(cornerRadius: 20, style: .continuous)
                     .foregroundColor(Color(uiColor: .systemGray5))
             }
             .frame(minWidth: nil, idealWidth: 200, maxWidth: 200, alignment: .center)
-            .transition(.scale.combined(with: .opacity).combined(with: .move(edge: self.horizontalSizeClass == .compact ? .bottom : .top)))
+            .transition(.scale.combined(with: .opacity).combined(with: .move(edge: horizontalSizeClass == .compact ? .bottom : .top)))
         }
     }
-    
+
     @ViewBuilder func selectionControls() -> some View {
-        Button(action: { withAnimation{ windowState.isShowingSelectionColorPicker.toggle() }}) {
+        Button(action: { withAnimation { windowState.isShowingSelectionColorPicker.toggle() }}) {
             ZStack {
                 // Display the colors of the paths that are selected
                 ForEach(selectionColorIndices, id: \.index) { index, color in
                     Circle()
                         .foregroundColor(Color(uiColor: color))
                         .frame(height: 30)
-                        .overlay{
+                        .overlay {
                             Circle()
                                 .stroke(Color(uiColor: .systemGray5), lineWidth: 3)
                         }
@@ -282,7 +280,7 @@ struct CanvasDrawView: View {
         .accessibilityLabel("Изменить цвет")
         Spacer()
         Button(action: { try? windowState.removeSelectionPaths() }) {
-            ZStack{
+            ZStack {
                 Image(systemName: "scribble")
                     .font(.largeTitle)
                     .foregroundColor(.primary)
@@ -294,22 +292,22 @@ struct CanvasDrawView: View {
         }
         .accessibilityLabel("Убрать пути")
     }
-    
+
     private func selectionIsColor(_ color: SemanticColor) -> Bool {
         windowState.selectionColors.count == 1 && windowState.pencilSelectionColors.contains(color.pencilKitColor)
     }
-    
-    private func penAction() -> Void {
+
+    private func penAction() {
         if windowState.currentTool == .pen {
-            withAnimation{windowState.isShowingPenColorPicker.toggle()}
+            withAnimation { windowState.isShowingPenColorPicker.toggle() }
         } else {
             windowState.currentTool = .pen
         }
     }
-    
-    private func selectionAction() -> Void {
+
+    private func selectionAction() {
         if windowState.currentTool == .selection {
-            withAnimation{ windowState.selection = nil }
+            withAnimation { windowState.selection = nil }
         } else {
             windowState.currentTool = .selection
         }

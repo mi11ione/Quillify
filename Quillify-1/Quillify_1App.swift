@@ -1,5 +1,5 @@
 //
-//  QuillifyApp.swift
+//  Quillify_1App.swift
 //  Quillify
 //
 //  Created by mi11ion on 19/3/24.

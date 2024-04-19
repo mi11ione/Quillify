@@ -10,12 +10,12 @@ import SwiftUI
 struct CameraScanView: UIViewControllerRepresentable {
     typealias UIViewControllerType = CameraScan
     @ObservedObject var windowState: WindowState
-    
-    func makeUIViewController(context: Context) -> CameraScan {
+
+    func makeUIViewController(context _: Context) -> CameraScan {
         CameraScan(windowState: windowState)
     }
-    
-    func updateUIViewController(_ uiViewController: CameraScan, context: Context) {
+
+    func updateUIViewController(_: CameraScan, context _: Context) {
         // ignore
     }
 }

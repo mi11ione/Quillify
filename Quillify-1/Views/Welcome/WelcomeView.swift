@@ -10,7 +10,7 @@ import SwiftUI
 struct WelcomeView: View {
     @ObservedObject var windowState: WindowState
     @State var welcomeState: WelcomeState = .welcomeMessage
-    
+
     var body: some View {
         ZStack {
             ScrollView {
@@ -26,12 +26,12 @@ struct WelcomeView: View {
                         .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading).combined(with: .opacity)))
                 }
             }
-            
+
             if welcomeState != .selectPhoto {
-                VStack{
+                VStack {
                     Spacer()
-                    Button(action: { self.buttonAction() }) {
-                        Text(self.buttonMessage())
+                    Button(action: { buttonAction() }) {
+                        Text(buttonMessage())
                             .font(.headline)
                             .bold()
                             .foregroundColor(Color(uiColor: UIColor.systemBackground))
@@ -46,18 +46,18 @@ struct WelcomeView: View {
             }
         }
     }
-    
+
     func buttonAction() {
         switch welcomeState {
         case .welcomeMessage:
-            withAnimation { self.welcomeState = .learnTools }
+            withAnimation { welcomeState = .learnTools }
         case .learnTools:
-            withAnimation { self.welcomeState = .selectPhoto }
+            withAnimation { welcomeState = .selectPhoto }
         case .selectPhoto:
             break
         }
     }
-    
+
     func buttonMessage() -> String {
         switch welcomeState {
         case .welcomeMessage:

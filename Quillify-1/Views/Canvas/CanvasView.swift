@@ -9,12 +9,12 @@ import SwiftUI
 
 struct CanvasView: UIViewControllerRepresentable {
     @ObservedObject var windowState: WindowState
-    
-    func makeUIViewController(context: Context) -> UIViewController {
+
+    func makeUIViewController(context _: Context) -> UIViewController {
         Canvas(state: windowState)
     }
-    
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+
+    func updateUIViewController(_: UIViewController, context _: Context) {
         // ignore
     }
 }

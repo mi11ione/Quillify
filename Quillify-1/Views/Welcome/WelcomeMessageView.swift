@@ -14,10 +14,10 @@ struct WelcomeMessageView: View {
             HStack {
                 Spacer()
             }
-            
+
             VStack {
                 Spacer()
-                
+
                 Image("Icon")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -26,31 +26,32 @@ struct WelcomeMessageView: View {
                     .accessibilityLabel(Text("App Icon"))
                     .padding()
                     .padding(.vertical, 40)
-                
+
                 VStack(alignment: .leading) {
                     Text("Quillify").font(.largeTitle)
                         .bold()
                         .padding(.bottom)
-                    
+
                     Text("Вы когда-нибудь хотели перемещать и редактировать записи на бумаге, будто используя цифровые чернила?\n\nНу вот и я хотел, поэтому придумал такую крутую вещь🤓\n\nQuillify позволяет вам преобразовать изображения с рукописным текстом или линейными рисунками в векторные объекты. Этими объектами затем можно манипулировать точно так, как если бы они были нарисованы непосредственно на вашем устройстве.\nКруто же!")
                         .font(fontForCurrentDevice())
                 }
                 .lineSpacing(10)
                 .frame(maxWidth: 600)
                 .padding()
-                
+
                 Spacer()
                     .frame(height: 200)
-                
+
                 Spacer()
             }
         }
     }
+
     private func fontForCurrentDevice() -> Font {
-            if horizontalSizeClass == .compact {
-                return .body
-            } else {
-                return .title2
-            }
+        if horizontalSizeClass == .compact {
+            return .body
+        } else {
+            return .title2
         }
+    }
 }

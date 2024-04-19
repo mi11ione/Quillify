@@ -12,27 +12,26 @@ import Foundation
 // implement my own double-ended queue
 class Deque<T> {
     private let header: Sentinel<T>
-    
+
     init() {
-        self.header = Sentinel()
+        header = Sentinel()
     }
-    
+
     func popFirst() -> T? {
-        self.header.popFirst()
+        header.popFirst()
     }
-    
+
     func popLast() -> T? {
-        self.header.popLast()
+        header.popLast()
     }
-    
+
     func addAtTail(_ item: T) {
-        self.header.addAtTail(item)
+        header.addAtTail(item)
     }
-    
 }
 
 // Create a doubly linked list structure of a generic type
-fileprivate protocol NodeProtocol {
+private protocol NodeProtocol {
     associatedtype T
     associatedtype U: NodeProtocol where U.T == T
     var next: U? { get set }
@@ -41,37 +40,36 @@ fileprivate protocol NodeProtocol {
 
 // This class should not be created directly, only its
 // subclasses should be used in a linked list
-fileprivate class ANode<T>: NodeProtocol {
+private class ANode<T>: NodeProtocol {
     typealias T = T
     typealias U = ANode<T>
-    
+
     weak var next: U? = nil
     var prev: U? = nil
-    
+
     func getData() -> T? {
-        return nil
+        nil
     }
 }
 
 // The sentinel stores the head and tail elements of the deque
-fileprivate class Sentinel<T>: ANode<T> {
-    
+private class Sentinel<T>: ANode<T> {
     func popFirst() -> T? {
-        let prev = self.prev
+        let prev = prev
         self.prev = prev?.next
         return prev?.getData()
     }
-    
+
     func popLast() -> T? {
-        let next = self.next
+        let next = next
         self.next = next?.prev
         return next?.getData()
     }
-    
+
     func addAtTail(_ item: T) {
-        guard let next = self.next else {
+        guard let next = next else {
             let node = Node<T>(item, next: self, prev: self)
-            self.prev = node
+            prev = node
             self.next = node
             return
         }
@@ -79,20 +77,19 @@ fileprivate class Sentinel<T>: ANode<T> {
         next.next = node
         self.next = node
     }
-    
 }
 
-fileprivate class Node<T>: ANode<T> {
+private class Node<T>: ANode<T> {
     var data: T
-    
+
     init(_ data: T, next: ANode<T>?, prev: ANode<T>?) {
         self.data = data
         super.init()
         self.next = next
         self.prev = prev
     }
-    
+
     override func getData() -> T? {
-        return data
+        data
     }
 }

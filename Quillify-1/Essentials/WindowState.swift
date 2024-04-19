@@ -6,8 +6,8 @@
 //
 
 import Combine
-import SwiftUI
 import PencilKit
+import SwiftUI
 
 class WindowState: ObservableObject {
     // The color of the pen tool
@@ -21,103 +21,103 @@ class WindowState: ObservableObject {
                 }
                 // No longer in pen mode, dismiss the pen color picker
                 if newValue != CanvasTool.pen {
-                    withAnimation{ self.isShowingPenColorPicker = false }
+                    withAnimation { self.isShowingPenColorPicker = false }
                 }
             }
         }
     }
-    
+
     // Store the indices of the selected strokes in the drawing's strokes array
     @Published var selection: Set<Int>? = nil {
         // Selection changed, the selection color picker should not be visible
         willSet {
             Task { @MainActor in
-                withAnimation{ self.isShowingSelectionColorPicker = false }
+                withAnimation { self.isShowingSelectionColorPicker = false }
             }
-            
         }
     }
+
     @Published var isShowingPenColorPicker: Bool = false
     @Published var isShowingSelectionColorPicker: Bool = false
     @Published var photoMode: PhotoMode = .welcome
-    
+
     @Published var finalizeImage: UIImage? = nil
     var imageConversion: ImageConversion? = nil
     // Notify when the image conversion has completed
     var imageCancellable: AnyCancellable? = nil
-    
+
     // Used to know where to place the image
     weak var canvas: Canvas? = nil
-    
+
     var hasSelection: Bool {
-        self.selection != nil
+        selection != nil
     }
-    
+
     var isShowingPopover: Bool {
         isShowingPenColorPicker || isShowingSelectionColorPicker
     }
-    
+
     var selectedStrokes: [(Int, PKStroke)] {
         guard let selection = selection else { return [] }
-        return canvas?.strokes.enumerated().filter({ index, stroke in
-            return selection.contains(index)
-        }) ?? []
+        return canvas?.strokes.enumerated().filter { index, _ in
+            selection.contains(index)
+        } ?? []
     }
-    
+
     var selectionColors: Set<UIColor> {
         var colors = Set<UIColor>()
-        return self.selectedStrokes.reduce(into: Set<UIColor>(), { colorSet, path in
+        return selectedStrokes.reduce(into: Set<UIColor>()) { colorSet, path in
             let dynamicColor = SemanticColor.adaptiveInvertedBrightness(color: path.1.ink.color)
             guard !colors.contains(path.1.ink.color) else {
                 return
             }
             colors.insert(path.1.ink.color)
             colorSet.insert(dynamicColor)
-        })
+        }
     }
-    
+
     // Colors that are equatable
     var pencilSelectionColors: Set<UIColor> {
-        Set<UIColor>(selectionColors.map { $0.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))})
+        Set<UIColor>(selectionColors.map { $0.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)) })
     }
-    
+
     enum SelectionModifyError: Error {
         case noSelection
     }
-    
+
     func addStrokes(strokes: [PKStroke]) {
         canvas?.addStrokes(strokes)
     }
-    
-    func recolorSelection(newColor: SemanticColor) throws -> Void {
+
+    func recolorSelection(newColor: SemanticColor) throws {
         let recoloredStrokes = selectedStrokes.map { index, stroke in
-            return (index, PKStroke(ink: PKInk(.pen, color: newColor.pencilKitColor), path: stroke.path, transform: stroke.transform, mask: stroke.mask))
+            (index, PKStroke(ink: PKInk(.pen, color: newColor.pencilKitColor), path: stroke.path, transform: stroke.transform, mask: stroke.mask))
         }
-        self.canvas?.updateStrokes(recoloredStrokes)
+        canvas?.updateStrokes(recoloredStrokes)
         // Update the canvas with the new color
         objectWillChange.send()
     }
-    
-    func removeSelectionPaths() throws -> Void {
+
+    func removeSelectionPaths() throws {
         guard let selection = selection else {
             throw SelectionModifyError.noSelection
         }
-        self.removePaths(selection)
+        removePaths(selection)
         withAnimation { self.selection = nil }
     }
-    
+
     func removePaths(_ removeSet: Set<Int>) {
-        self.canvas?.removeStrokes(removeSet)
+        canvas?.removeStrokes(removeSet)
     }
-    
+
     func startConversion(image: UIImage) async {
-        let centerScreen = await self.canvas?.getCenterScreenCanvasPosition() ?? CGPoint(x: 0, y: 0)
+        let centerScreen = await canvas?.getCenterScreenCanvasPosition() ?? CGPoint(x: 0, y: 0)
         let conversion = ImageConversion(image: image, position: centerScreen)
         // Begin background conversion
         conversion.convert()
-        self.imageConversion = conversion
+        imageConversion = conversion
         // Subscribe to this image conversion's updates
-        self.imageCancellable = conversion.objectWillChange.sink(receiveValue: { _ in
+        imageCancellable = conversion.objectWillChange.sink(receiveValue: { _ in
             Task { @MainActor in
                 self.objectWillChange.send()
             }
@@ -126,12 +126,12 @@ class WindowState: ObservableObject {
             withAnimation { self.currentTool = .placePhoto }
         }
     }
-    
+
     /// Adds the image conversion paths to the canvas
     func placeImage() {
         guard let imageConversion = imageConversion else { return }
         let imagePaths = imageConversion.getStrokes()
-        self.addStrokes(strokes: imagePaths)
+        addStrokes(strokes: imagePaths)
         withAnimation { self.currentTool = .pen }
         self.imageConversion = nil
     }
@@ -164,7 +164,7 @@ enum SemanticColor: CaseIterable, Comparable {
     case green
     case blue
     case purple
-    
+
     // light mode colors that dark mode colors are generated from
     private var lightColor: UIColor {
         switch self {
@@ -186,16 +186,16 @@ enum SemanticColor: CaseIterable, Comparable {
             return #colorLiteral(red: 0.6174378395, green: 0.2372990549, blue: 0.8458326459, alpha: 1)
         }
     }
-    
+
     public var color: UIColor {
         Self.adaptiveInvertedBrightness(color: lightColor)
     }
-    
+
     /// Color that changes depending on the system theme with an inverted brightness variant of the given color
     static func adaptiveInvertedBrightness(color: UIColor) -> UIColor {
         let lightMode = color.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
         let darkMode = Self.invertedBrightnessColor(color: lightMode)
-        
+
         let provider: (UITraitCollection) -> UIColor = { traits in
             if traits.userInterfaceStyle == .dark {
                 return darkMode
@@ -205,35 +205,35 @@ enum SemanticColor: CaseIterable, Comparable {
         }
         return UIColor(dynamicProvider: provider)
     }
-    
+
     /// Inverted brightness variant of the given color
     static func invertedBrightnessColor(color: UIColor) -> UIColor {
         let lightMode = color.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-        
+
         var hue: CGFloat = 0
         var saturation: CGFloat = 0
         var brightness: CGFloat = 0
         var alpha: CGFloat = 0
-    
+
         lightMode.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
-        
+
         var red: CGFloat = 0
         var green: CGFloat = 0
         var blue: CGFloat = 0
         lightMode.getRed(&red, green: &green, blue: &blue, alpha: nil)
-        
+
         let inverted = UIColor(red: 1 - red, green: 1 - green, blue: 1 - blue, alpha: alpha)
         var invertedBrightness: CGFloat = 0
         inverted.getHue(nil, saturation: nil, brightness: &invertedBrightness, alpha: nil)
-        
+
         return UIColor(hue: hue, saturation: saturation, brightness: invertedBrightness, alpha: alpha)
     }
-    
+
     /// The light mode color that PencilKit uses to interpret light and dark mode colors
     public var pencilKitColor: UIColor {
-        self.lightColor
+        lightColor
     }
-    
+
     /// Accessibility label for color
     public func name(isDark: Bool) -> String {
         switch self {
@@ -255,54 +255,53 @@ enum SemanticColor: CaseIterable, Comparable {
             return "Purple"
         }
     }
-    
 }
 
 /// Photo that is being converted to a collection of paths
 class ImageConversion: ObservableObject {
     let image: UIImage
     @Published var paths: [([CGPoint], UIColor)]? = nil
-    
+
     lazy var scaleTransform: CGAffineTransform = {
         // Initially fit the image within a 400 point square
         let dimension: CGFloat = 400
         guard let cgImage = image.cgImage else { return .identity }
         let width = cgImage.width
         let height = cgImage.height
-        let max: CGFloat = CGFloat(max(width, height))
+        let max = CGFloat(max(width, height))
         let scale = dimension / max
-        let transform = CGAffineTransform.init(scaleX: scale, y: scale)
+        let transform = CGAffineTransform(scaleX: scale, y: scale)
         return transform
     }()
-    
+
     var translateTransform: CGAffineTransform
-    
+
     var transform: CGAffineTransform {
-        return scaleTransform.concatenating(translateTransform)
+        scaleTransform.concatenating(translateTransform)
     }
-    
+
     var isConversionFinished: Bool {
         paths != nil
     }
-    
+
     init(image: UIImage, position: CGPoint) {
         self.image = image
-        self.translateTransform = CGAffineTransform(translationX: position.x, y: position.y)
+        translateTransform = CGAffineTransform(translationX: position.x, y: position.y)
         let size = image.size
         // translate the image so that the image is centered on the canvas
-        var rect: CGRect = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+        var rect = CGRect(x: 0, y: 0, width: size.width, height: size.height)
         rect = rect.applying(scaleTransform)
-        self.translateTransform = translateTransform.translatedBy(x: -1 * CGFloat(rect.width) / 2, y: -1 * CGFloat(rect.height) / 2)
+        translateTransform = translateTransform.translatedBy(x: -1 * CGFloat(rect.width) / 2, y: -1 * CGFloat(rect.height) / 2)
     }
-    
+
     func applyTranslate(transform: CGAffineTransform) {
-        self.translateTransform = self.translateTransform.concatenating(transform)
+        translateTransform = translateTransform.concatenating(transform)
     }
-    
+
     func applyScale(transform: CGAffineTransform) {
-        self.scaleTransform = self.scaleTransform.concatenating(transform)
+        scaleTransform = scaleTransform.concatenating(transform)
     }
-    
+
     /// Start the path conversion of this image
     func convert() {
         Task {
@@ -310,10 +309,10 @@ class ImageConversion: ObservableObject {
             self.paths = convertedPaths.map { $0 }
         }
     }
-    
+
     /// Generate strokes from the converted path data
     func getStrokes() -> [PKStroke] {
-        guard let paths = self.paths else { return [] }
+        guard let paths = paths else { return [] }
         return paths.map { points, color in
             let transformedPoints = points.map { point -> PKStrokePoint in
                 let transformed = point.applying(transform)

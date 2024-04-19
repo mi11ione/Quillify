@@ -41,7 +41,6 @@
 		33B392672BAA25A000E2DFE0 /* Quillify_1App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Quillify_1App.swift; sourceTree = "<group>"; };
 		33B392692BAA25A000E2DFE0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		33B3926B2BAA25A100E2DFE0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		33B3926D2BAA25A100E2DFE0 /* Quillify_1.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Quillify_1.entitlements; sourceTree = "<group>"; };
 		33B3926F2BAA25A100E2DFE0 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		33B392782BAA28DF00E2DFE0 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		33B3927A2BAA28F100E2DFE0 /* WelcomeState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeState.swift; sourceTree = "<group>"; };
@@ -53,6 +52,7 @@
 		33B3928A2BAA2A3100E2DFE0 /* Canvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Canvas.swift; sourceTree = "<group>"; };
 		33B3928C2BAA2A7200E2DFE0 /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		33B3928E2BAA2AE100E2DFE0 /* CanvasDrawView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasDrawView.swift; sourceTree = "<group>"; };
+		33FD81462BD2D548003E517A /* Quillify_1.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Quillify_1.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,13 +95,18 @@
 		33B392662BAA25A000E2DFE0 /* Quillify-1 */ = {
 			isa = PBXGroup;
 			children = (
+				33FD81432BD2D45C003E517A /* States */,
+				33FD81422BD2D446003E517A /* Tools */,
+				33B392892BAA2A1900E2DFE0 /* Canvas */,
+				33B392772BAA28D200E2DFE0 /* Welcome */,
+				33B3927E2BAA295600E2DFE0 /* PhotoPicker */,
+				33A109BF2BCFF84500830066 /* Camera */,
 				33B392832BAA29A600E2DFE0 /* Essentials */,
-				33B392762BAA25FF00E2DFE0 /* Views */,
 				33B3926E2BAA25A100E2DFE0 /* Preview Content */,
 				33B392672BAA25A000E2DFE0 /* Quillify_1App.swift */,
+				33B392692BAA25A000E2DFE0 /* ContentView.swift */,
 				33B3926B2BAA25A100E2DFE0 /* Assets.xcassets */,
-				33B3926D2BAA25A100E2DFE0 /* Quillify_1.entitlements */,
-				33A109BB2BCFF71200830066 /* Shaders.metal */,
+				33FD81462BD2D548003E517A /* Quillify_1.entitlements */,
 			);
 			path = "Quillify-1";
 			sourceTree = "<group>";
@@ -114,24 +119,10 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		33B392762BAA25FF00E2DFE0 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				33A109BF2BCFF84500830066 /* Camera */,
-				33B392892BAA2A1900E2DFE0 /* Canvas */,
-				33B3927E2BAA295600E2DFE0 /* PhotoPicker */,
-				33B392772BAA28D200E2DFE0 /* Welcome */,
-				33B392692BAA25A000E2DFE0 /* ContentView.swift */,
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
 		33B392772BAA28D200E2DFE0 /* Welcome */ = {
 			isa = PBXGroup;
 			children = (
-				33B392782BAA28DF00E2DFE0 /* WelcomeView.swift */,
-				33B3927A2BAA28F100E2DFE0 /* WelcomeState.swift */,
-				33B3927C2BAA292600E2DFE0 /* WelcomeMessageView.swift */,
+				33FD81412BD2D435003E517A /* Views */,
 			);
 			path = Welcome;
 			sourceTree = "<group>";
@@ -149,8 +140,7 @@
 		33B392832BAA29A600E2DFE0 /* Essentials */ = {
 			isa = PBXGroup;
 			children = (
-				33B392852BAA29B900E2DFE0 /* ToolsView.swift */,
-				33B392872BAA29E800E2DFE0 /* WindowState.swift */,
+				33A109BB2BCFF71200830066 /* Shaders.metal */,
 				33A109B92BCFF6F500830066 /* Deque.swift */,
 				33A109BD2BCFF7AC00830066 /* Algorithm.swift */,
 			);
@@ -160,11 +150,45 @@
 		33B392892BAA2A1900E2DFE0 /* Canvas */ = {
 			isa = PBXGroup;
 			children = (
+				33FD81402BD2D418003E517A /* Views */,
 				33B3928A2BAA2A3100E2DFE0 /* Canvas.swift */,
-				33B3928C2BAA2A7200E2DFE0 /* CanvasView.swift */,
-				33B3928E2BAA2AE100E2DFE0 /* CanvasDrawView.swift */,
 			);
 			path = Canvas;
+			sourceTree = "<group>";
+		};
+		33FD81402BD2D418003E517A /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				33B3928E2BAA2AE100E2DFE0 /* CanvasDrawView.swift */,
+				33B3928C2BAA2A7200E2DFE0 /* CanvasView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		33FD81412BD2D435003E517A /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				33B3927C2BAA292600E2DFE0 /* WelcomeMessageView.swift */,
+				33B392782BAA28DF00E2DFE0 /* WelcomeView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		33FD81422BD2D446003E517A /* Tools */ = {
+			isa = PBXGroup;
+			children = (
+				33B392852BAA29B900E2DFE0 /* ToolsView.swift */,
+			);
+			path = Tools;
+			sourceTree = "<group>";
+		};
+		33FD81432BD2D45C003E517A /* States */ = {
+			isa = PBXGroup;
+			children = (
+				33B392872BAA29E800E2DFE0 /* WindowState.swift */,
+				33B3927A2BAA28F100E2DFE0 /* WelcomeState.swift */,
+			);
+			path = States;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

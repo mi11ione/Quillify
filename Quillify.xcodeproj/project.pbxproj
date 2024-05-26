@@ -7,19 +7,64 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		334745442C0342F5005D57FA /* QuillifyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745432C0342F5005D57FA /* QuillifyApp.swift */; };
-		334745462C0342F5005D57FA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745452C0342F5005D57FA /* ContentView.swift */; };
-		334745482C0342F6005D57FA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 334745472C0342F6005D57FA /* Assets.xcassets */; };
-		3347454C2C0342F6005D57FA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3347454B2C0342F6005D57FA /* Preview Assets.xcassets */; };
+		3347457A2C0343C4005D57FA /* Algorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745522C0343C4005D57FA /* Algorithm.swift */; };
+		3347457B2C0343C4005D57FA /* Deque.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745532C0343C4005D57FA /* Deque.swift */; };
+		3347457C2C0343C4005D57FA /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 334745542C0343C4005D57FA /* Shaders.metal */; };
+		3347457D2C0343C4005D57FA /* WelcomeState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745562C0343C4005D57FA /* WelcomeState.swift */; };
+		3347457E2C0343C4005D57FA /* WindowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745572C0343C4005D57FA /* WindowState.swift */; };
+		3347457F2C0343C4005D57FA /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745592C0343C4005D57FA /* Canvas.swift */; };
+		334745802C0343C4005D57FA /* CanvasDrawView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3347455A2C0343C4005D57FA /* CanvasDrawView.swift */; };
+		334745812C0343C4005D57FA /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3347455B2C0343C4005D57FA /* CanvasView.swift */; };
+		334745822C0343C4005D57FA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3347455D2C0343C4005D57FA /* ContentView.swift */; };
+		334745832C0343C4005D57FA /* CameraScan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3347455F2C0343C4005D57FA /* CameraScan.swift */; };
+		334745842C0343C4005D57FA /* CameraScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745602C0343C4005D57FA /* CameraScanView.swift */; };
+		334745852C0343C4005D57FA /* CameraScanViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745612C0343C4005D57FA /* CameraScanViewModel.swift */; };
+		334745862C0343C4005D57FA /* ExamplePhotos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745632C0343C4005D57FA /* ExamplePhotos.swift */; };
+		334745872C0343C4005D57FA /* ExamplePhotosController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745642C0343C4005D57FA /* ExamplePhotosController.swift */; };
+		334745882C0343C4005D57FA /* ExamplePhotosNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745652C0343C4005D57FA /* ExamplePhotosNavigationView.swift */; };
+		334745892C0343C4005D57FA /* ExamplePhotosView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745662C0343C4005D57FA /* ExamplePhotosView.swift */; };
+		3347458A2C0343C4005D57FA /* LibraryPhotoPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745682C0343C4005D57FA /* LibraryPhotoPickerView.swift */; };
+		3347458B2C0343C4005D57FA /* PhotoPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745692C0343C4005D57FA /* PhotoPickerView.swift */; };
+		3347458C2C0343C4005D57FA /* ToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3347456C2C0343C4005D57FA /* ToolsView.swift */; };
+		3347458D2C0343C4005D57FA /* ToolsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3347456D2C0343C4005D57FA /* ToolsViewModel.swift */; };
+		3347458E2C0343C4005D57FA /* WelcomeMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3347456F2C0343C4005D57FA /* WelcomeMessageView.swift */; };
+		3347458F2C0343C4005D57FA /* WelcomeOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745702C0343C4005D57FA /* WelcomeOverlay.swift */; };
+		334745902C0343C4005D57FA /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745712C0343C4005D57FA /* WelcomeView.swift */; };
+		334745912C0343C4005D57FA /* WelcomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745722C0343C4005D57FA /* WelcomeViewModel.swift */; };
+		334745922C0343C4005D57FA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 334745752C0343C4005D57FA /* Assets.xcassets */; };
+		334745982C03449C005D57FA /* QuillifyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745772C0343C4005D57FA /* QuillifyApp.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		334745402C0342F5005D57FA /* Quillify.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Quillify.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		334745432C0342F5005D57FA /* QuillifyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuillifyApp.swift; sourceTree = "<group>"; };
-		334745452C0342F5005D57FA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		334745472C0342F6005D57FA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		334745492C0342F6005D57FA /* Quillify.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Quillify.entitlements; sourceTree = "<group>"; };
-		3347454B2C0342F6005D57FA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		334745522C0343C4005D57FA /* Algorithm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Algorithm.swift; sourceTree = "<group>"; };
+		334745532C0343C4005D57FA /* Deque.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deque.swift; sourceTree = "<group>"; };
+		334745542C0343C4005D57FA /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		334745562C0343C4005D57FA /* WelcomeState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeState.swift; sourceTree = "<group>"; };
+		334745572C0343C4005D57FA /* WindowState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WindowState.swift; sourceTree = "<group>"; };
+		334745592C0343C4005D57FA /* Canvas.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Canvas.swift; sourceTree = "<group>"; };
+		3347455A2C0343C4005D57FA /* CanvasDrawView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasDrawView.swift; sourceTree = "<group>"; };
+		3347455B2C0343C4005D57FA /* CanvasView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
+		3347455D2C0343C4005D57FA /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		3347455F2C0343C4005D57FA /* CameraScan.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraScan.swift; sourceTree = "<group>"; };
+		334745602C0343C4005D57FA /* CameraScanView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraScanView.swift; sourceTree = "<group>"; };
+		334745612C0343C4005D57FA /* CameraScanViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraScanViewModel.swift; sourceTree = "<group>"; };
+		334745632C0343C4005D57FA /* ExamplePhotos.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExamplePhotos.swift; sourceTree = "<group>"; };
+		334745642C0343C4005D57FA /* ExamplePhotosController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExamplePhotosController.swift; sourceTree = "<group>"; };
+		334745652C0343C4005D57FA /* ExamplePhotosNavigationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExamplePhotosNavigationView.swift; sourceTree = "<group>"; };
+		334745662C0343C4005D57FA /* ExamplePhotosView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExamplePhotosView.swift; sourceTree = "<group>"; };
+		334745682C0343C4005D57FA /* LibraryPhotoPickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LibraryPhotoPickerView.swift; sourceTree = "<group>"; };
+		334745692C0343C4005D57FA /* PhotoPickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoPickerView.swift; sourceTree = "<group>"; };
+		3347456C2C0343C4005D57FA /* ToolsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolsView.swift; sourceTree = "<group>"; };
+		3347456D2C0343C4005D57FA /* ToolsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolsViewModel.swift; sourceTree = "<group>"; };
+		3347456F2C0343C4005D57FA /* WelcomeMessageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeMessageView.swift; sourceTree = "<group>"; };
+		334745702C0343C4005D57FA /* WelcomeOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeOverlay.swift; sourceTree = "<group>"; };
+		334745712C0343C4005D57FA /* WelcomeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		334745722C0343C4005D57FA /* WelcomeViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeViewModel.swift; sourceTree = "<group>"; };
+		334745752C0343C4005D57FA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		334745762C0343C4005D57FA /* Quillify.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Quillify.entitlements; sourceTree = "<group>"; };
+		334745772C0343C4005D57FA /* QuillifyApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuillifyApp.swift; sourceTree = "<group>"; };
+		334745792C0343C4005D57FA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,7 +81,8 @@
 		334745372C0342F5005D57FA = {
 			isa = PBXGroup;
 			children = (
-				334745422C0342F5005D57FA /* Quillify */,
+				334745792C0343C4005D57FA /* Info.plist */,
+				334745782C0343C4005D57FA /* Quillify */,
 				334745412C0342F5005D57FA /* Products */,
 			);
 			sourceTree = "<group>";
@@ -49,24 +95,126 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		334745422C0342F5005D57FA /* Quillify */ = {
+		334745552C0343C4005D57FA /* Essentials */ = {
 			isa = PBXGroup;
 			children = (
-				334745432C0342F5005D57FA /* QuillifyApp.swift */,
-				334745452C0342F5005D57FA /* ContentView.swift */,
-				334745472C0342F6005D57FA /* Assets.xcassets */,
-				334745492C0342F6005D57FA /* Quillify.entitlements */,
-				3347454A2C0342F6005D57FA /* Preview Content */,
+				334745522C0343C4005D57FA /* Algorithm.swift */,
+				334745532C0343C4005D57FA /* Deque.swift */,
+				334745542C0343C4005D57FA /* Shaders.metal */,
 			);
-			path = Quillify;
+			path = Essentials;
 			sourceTree = "<group>";
 		};
-		3347454A2C0342F6005D57FA /* Preview Content */ = {
+		334745582C0343C4005D57FA /* States */ = {
 			isa = PBXGroup;
 			children = (
-				3347454B2C0342F6005D57FA /* Preview Assets.xcassets */,
+				334745562C0343C4005D57FA /* WelcomeState.swift */,
+				334745572C0343C4005D57FA /* WindowState.swift */,
 			);
-			path = "Preview Content";
+			path = States;
+			sourceTree = "<group>";
+		};
+		3347455C2C0343C4005D57FA /* Canvas */ = {
+			isa = PBXGroup;
+			children = (
+				334745592C0343C4005D57FA /* Canvas.swift */,
+				3347455A2C0343C4005D57FA /* CanvasDrawView.swift */,
+				3347455B2C0343C4005D57FA /* CanvasView.swift */,
+			);
+			path = Canvas;
+			sourceTree = "<group>";
+		};
+		3347455E2C0343C4005D57FA /* Content */ = {
+			isa = PBXGroup;
+			children = (
+				3347455D2C0343C4005D57FA /* ContentView.swift */,
+			);
+			path = Content;
+			sourceTree = "<group>";
+		};
+		334745622C0343C4005D57FA /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				3347455F2C0343C4005D57FA /* CameraScan.swift */,
+				334745602C0343C4005D57FA /* CameraScanView.swift */,
+				334745612C0343C4005D57FA /* CameraScanViewModel.swift */,
+			);
+			path = Camera;
+			sourceTree = "<group>";
+		};
+		334745672C0343C4005D57FA /* Example */ = {
+			isa = PBXGroup;
+			children = (
+				334745632C0343C4005D57FA /* ExamplePhotos.swift */,
+				334745642C0343C4005D57FA /* ExamplePhotosController.swift */,
+				334745652C0343C4005D57FA /* ExamplePhotosNavigationView.swift */,
+				334745662C0343C4005D57FA /* ExamplePhotosView.swift */,
+			);
+			path = Example;
+			sourceTree = "<group>";
+		};
+		3347456A2C0343C4005D57FA /* PhotoPicker */ = {
+			isa = PBXGroup;
+			children = (
+				334745682C0343C4005D57FA /* LibraryPhotoPickerView.swift */,
+				334745692C0343C4005D57FA /* PhotoPickerView.swift */,
+			);
+			path = PhotoPicker;
+			sourceTree = "<group>";
+		};
+		3347456B2C0343C4005D57FA /* Image */ = {
+			isa = PBXGroup;
+			children = (
+				334745622C0343C4005D57FA /* Camera */,
+				334745672C0343C4005D57FA /* Example */,
+				3347456A2C0343C4005D57FA /* PhotoPicker */,
+			);
+			path = Image;
+			sourceTree = "<group>";
+		};
+		3347456E2C0343C4005D57FA /* Tools */ = {
+			isa = PBXGroup;
+			children = (
+				3347456C2C0343C4005D57FA /* ToolsView.swift */,
+				3347456D2C0343C4005D57FA /* ToolsViewModel.swift */,
+			);
+			path = Tools;
+			sourceTree = "<group>";
+		};
+		334745732C0343C4005D57FA /* Welcome */ = {
+			isa = PBXGroup;
+			children = (
+				3347456F2C0343C4005D57FA /* WelcomeMessageView.swift */,
+				334745702C0343C4005D57FA /* WelcomeOverlay.swift */,
+				334745712C0343C4005D57FA /* WelcomeView.swift */,
+				334745722C0343C4005D57FA /* WelcomeViewModel.swift */,
+			);
+			path = Welcome;
+			sourceTree = "<group>";
+		};
+		334745742C0343C4005D57FA /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				3347455C2C0343C4005D57FA /* Canvas */,
+				3347455E2C0343C4005D57FA /* Content */,
+				3347456B2C0343C4005D57FA /* Image */,
+				3347456E2C0343C4005D57FA /* Tools */,
+				334745732C0343C4005D57FA /* Welcome */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		334745782C0343C4005D57FA /* Quillify */ = {
+			isa = PBXGroup;
+			children = (
+				334745552C0343C4005D57FA /* Essentials */,
+				334745582C0343C4005D57FA /* States */,
+				334745742C0343C4005D57FA /* Views */,
+				334745752C0343C4005D57FA /* Assets.xcassets */,
+				334745762C0343C4005D57FA /* Quillify.entitlements */,
+				334745772C0343C4005D57FA /* QuillifyApp.swift */,
+			);
+			path = Quillify;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -127,8 +275,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3347454C2C0342F6005D57FA /* Preview Assets.xcassets in Resources */,
-				334745482C0342F6005D57FA /* Assets.xcassets in Resources */,
+				334745922C0343C4005D57FA /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,8 +286,31 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				334745462C0342F5005D57FA /* ContentView.swift in Sources */,
-				334745442C0342F5005D57FA /* QuillifyApp.swift in Sources */,
+				334745982C03449C005D57FA /* QuillifyApp.swift in Sources */,
+				334745882C0343C4005D57FA /* ExamplePhotosNavigationView.swift in Sources */,
+				334745912C0343C4005D57FA /* WelcomeViewModel.swift in Sources */,
+				334745872C0343C4005D57FA /* ExamplePhotosController.swift in Sources */,
+				3347457F2C0343C4005D57FA /* Canvas.swift in Sources */,
+				334745862C0343C4005D57FA /* ExamplePhotos.swift in Sources */,
+				3347457D2C0343C4005D57FA /* WelcomeState.swift in Sources */,
+				3347458E2C0343C4005D57FA /* WelcomeMessageView.swift in Sources */,
+				3347458A2C0343C4005D57FA /* LibraryPhotoPickerView.swift in Sources */,
+				334745852C0343C4005D57FA /* CameraScanViewModel.swift in Sources */,
+				3347457C2C0343C4005D57FA /* Shaders.metal in Sources */,
+				334745892C0343C4005D57FA /* ExamplePhotosView.swift in Sources */,
+				3347458F2C0343C4005D57FA /* WelcomeOverlay.swift in Sources */,
+				334745802C0343C4005D57FA /* CanvasDrawView.swift in Sources */,
+				3347458B2C0343C4005D57FA /* PhotoPickerView.swift in Sources */,
+				3347457A2C0343C4005D57FA /* Algorithm.swift in Sources */,
+				334745822C0343C4005D57FA /* ContentView.swift in Sources */,
+				3347458C2C0343C4005D57FA /* ToolsView.swift in Sources */,
+				3347457B2C0343C4005D57FA /* Deque.swift in Sources */,
+				334745842C0343C4005D57FA /* CameraScanView.swift in Sources */,
+				334745902C0343C4005D57FA /* WelcomeView.swift in Sources */,
+				3347458D2C0343C4005D57FA /* ToolsViewModel.swift in Sources */,
+				3347457E2C0343C4005D57FA /* WindowState.swift in Sources */,
+				334745812C0343C4005D57FA /* CanvasView.swift in Sources */,
+				334745832C0343C4005D57FA /* CameraScan.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -269,7 +439,6 @@
 				CODE_SIGN_ENTITLEMENTS = Quillify/Quillify.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Quillify/Preview Content\"";
 				DEVELOPMENT_TEAM = ZZWB6X2U7F;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -284,15 +453,15 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 14.5;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mi11ion.Quillify;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mi11ione.Quillify;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -307,7 +476,6 @@
 				CODE_SIGN_ENTITLEMENTS = Quillify/Quillify.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Quillify/Preview Content\"";
 				DEVELOPMENT_TEAM = ZZWB6X2U7F;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -322,15 +490,15 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 14.5;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mi11ion.Quillify;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mi11ione.Quillify;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

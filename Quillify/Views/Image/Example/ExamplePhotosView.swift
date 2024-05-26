@@ -9,6 +9,6 @@ struct ExamplePhotosView: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_: ExamplePhotosController, context _: Context) {
-        // No updates needed
+        // ignore
     }
 }

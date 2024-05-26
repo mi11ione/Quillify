@@ -8,7 +8,7 @@ struct CameraScanView: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_: CameraScan, context _: Context) {
-        // Ignore
+        // ignore
     }
 
     func makeCoordinator() -> CameraScanViewModel {

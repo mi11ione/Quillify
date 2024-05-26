@@ -1,10 +1,3 @@
-//
-//  CanvasDrawView.swift
-//  Quillify
-//
-//  Created by mi11ion on 19/3/24.
-//
-
 import SwiftUI
 
 struct CanvasDrawView: View {
@@ -17,7 +10,6 @@ struct CanvasDrawView: View {
         GridItem(.adaptive(minimum: 30)),
     ]
 
-    // Get the first three colors that are in the selection
     var selectionColorIndices: [(index: Int, color: UIColor)] {
         let colors = Array(windowState.selectionColors).enumerated().filter { index, _ in
             index < 3
@@ -29,7 +21,6 @@ struct CanvasDrawView: View {
         windowState.selection != nil
     }
 
-    // Give adequate space to 3 vs 5 tools
     var toolWidth: CGFloat {
         hasSelection ? 250 : 400
     }
@@ -145,7 +136,6 @@ struct CanvasDrawView: View {
                 Image(systemName: "pencil.tip")
                     .font(.largeTitle)
                     .foregroundColor(windowState.currentTool == .pen ? .primary : .secondary)
-                // Overlay selected color
                 Image(systemName: "pencil.tip")
                     .font(.largeTitle)
                     .foregroundColor(Color(uiColor: windowState.currentColor.color))
@@ -261,7 +251,6 @@ struct CanvasDrawView: View {
     @ViewBuilder func selectionControls() -> some View {
         Button(action: { withAnimation { windowState.isShowingSelectionColorPicker.toggle() }}) {
             ZStack {
-                // Display the colors of the paths that are selected
                 ForEach(selectionColorIndices, id: \.index) { index, color in
                     Circle()
                         .foregroundColor(Color(uiColor: color))

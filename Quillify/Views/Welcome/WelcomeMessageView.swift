@@ -42,7 +42,7 @@ struct WelcomeMessageView: View {
     private func fontForCurrentDevice() -> Font {
         horizontalSizeClass == .compact ? .body : .title2
     }
-    
+
     private var welcomeMessage: String {
         """
         Вы когда-нибудь хотели перемещать и редактировать записи на бумаге, будто используя цифровые чернила?\n

@@ -9,11 +9,13 @@ class WindowState: ObservableObject {
             handleToolChange(newTool: newValue)
         }
     }
+
     @Published var selection: Set<Int>? = nil {
         willSet {
             handleSelectionChange()
         }
     }
+
     @Published var isShowingPenColorPicker: Bool = false
     @Published var isShowingSelectionColorPicker: Bool = false
     @Published var photoMode: PhotoMode = .welcome
@@ -32,7 +34,7 @@ class WindowState: ObservableObject {
     }
 
     var selectedStrokes: [(Int, PKStroke)] {
-        guard let selection = selection else { return [] }
+        guard let selection else { return [] }
         return canvas?.strokes.enumerated().filter { index, _ in selection.contains(index) } ?? []
     }
 
@@ -65,7 +67,7 @@ class WindowState: ObservableObject {
     }
 
     func removeSelectionPaths() throws {
-        guard let selection = selection else {
+        guard let selection else {
             throw SelectionModifyError.noSelection
         }
         removePaths(selection)
@@ -82,7 +84,7 @@ class WindowState: ObservableObject {
         conversion.convert()
         imageConversion = conversion
         imageCancellable = conversion.objectWillChange.sink { [weak self] _ in
-            guard let self = self else { return }
+            guard let self else { return }
             DispatchQueue.main.async {
                 self.objectWillChange.send()
             }
@@ -95,7 +97,7 @@ class WindowState: ObservableObject {
     }
 
     func placeImage() {
-        guard let imageConversion = imageConversion else { return }
+        guard let imageConversion else { return }
         let imagePaths = imageConversion.getStrokes()
         addStrokes(strokes: imagePaths)
         withAnimation { self.currentTool = .pen }
@@ -138,21 +140,21 @@ enum SemanticColor: CaseIterable, Comparable {
     var lightColor: UIColor {
         switch self {
         case .primary:
-            return #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+            #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
         case .gray:
-            return #colorLiteral(red: 0.5568627451, green: 0.5568627451, blue: 0.5764705882, alpha: 1)
+            #colorLiteral(red: 0.5568627451, green: 0.5568627451, blue: 0.5764705882, alpha: 1)
         case .red:
-            return #colorLiteral(red: 0.9833723903, green: 0.1313590407, blue: 0.1335203946, alpha: 1)
+            #colorLiteral(red: 0.9833723903, green: 0.1313590407, blue: 0.1335203946, alpha: 1)
         case .orange:
-            return #colorLiteral(red: 0.999529779, green: 0.5594156384, blue: 0, alpha: 1)
+            #colorLiteral(red: 0.999529779, green: 0.5594156384, blue: 0, alpha: 1)
         case .yellow:
-            return #colorLiteral(red: 0.9696072936, green: 0.8020537496, blue: 0, alpha: 1)
+            #colorLiteral(red: 0.9696072936, green: 0.8020537496, blue: 0, alpha: 1)
         case .green:
-            return #colorLiteral(red: 0.3882352941, green: 0.7921568627, blue: 0.337254902, alpha: 1)
+            #colorLiteral(red: 0.3882352941, green: 0.7921568627, blue: 0.337254902, alpha: 1)
         case .blue:
-            return #colorLiteral(red: 0.03155988827, green: 0.4386033714, blue: 0.9659433961, alpha: 1)
+            #colorLiteral(red: 0.03155988827, green: 0.4386033714, blue: 0.9659433961, alpha: 1)
         case .purple:
-            return #colorLiteral(red: 0.6174378395, green: 0.2372990549, blue: 0.8458326459, alpha: 1)
+            #colorLiteral(red: 0.6174378395, green: 0.2372990549, blue: 0.8458326459, alpha: 1)
         }
     }
 
@@ -181,21 +183,21 @@ enum SemanticColor: CaseIterable, Comparable {
     func name(isDark: Bool) -> String {
         switch self {
         case .primary:
-            return isDark ? "White" : "Black"
+            isDark ? "White" : "Black"
         case .gray:
-            return "Gray"
+            "Gray"
         case .red:
-            return "Red"
+            "Red"
         case .orange:
-            return "Orange"
+            "Orange"
         case .yellow:
-            return "Yellow"
+            "Yellow"
         case .green:
-            return "Green"
+            "Green"
         case .blue:
-            return "Blue"
+            "Blue"
         case .purple:
-            return "Purple"
+            "Purple"
         }
     }
 }
@@ -251,7 +253,7 @@ class ImageConversion: ObservableObject {
     }
 
     func getStrokes() -> [PKStroke] {
-        guard let paths = paths else { return [] }
+        guard let paths else { return [] }
         return paths.map { points, color in
             let transformedPoints = points.map { point in
                 PKStrokePoint(location: point.applying(transform), timeOffset: 0, size: CGSize(width: 3, height: 3), opacity: 1, force: 2, azimuth: 0, altitude: 0)

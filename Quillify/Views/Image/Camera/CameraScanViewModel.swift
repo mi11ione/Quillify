@@ -5,7 +5,7 @@ class CameraScanViewModel: NSObject, ObservableObject, VNDocumentCameraViewContr
     private var state: WindowState
 
     init(windowState: WindowState) {
-        self.state = windowState
+        state = windowState
         super.init()
     }
 
@@ -23,7 +23,7 @@ class CameraScanViewModel: NSObject, ObservableObject, VNDocumentCameraViewContr
         controller.dismiss(animated: true)
     }
 
-    func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFailWithError error: Error) {
+    func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFailWithError _: Error) {
         controller.dismiss(animated: true)
     }
 }

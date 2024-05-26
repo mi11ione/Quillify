@@ -1,6 +1,6 @@
 import Combine
-import VisionKit
 import SwiftUI
+import VisionKit
 
 class CameraScan: UIViewController {
     private var state: WindowState
@@ -9,13 +9,13 @@ class CameraScan: UIViewController {
     private var viewModel: CameraScanViewModel
 
     init(windowState: WindowState, viewModel: CameraScanViewModel) {
-        self.state = windowState
+        state = windowState
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
 
     @available(*, unavailable)
-    required init?(coder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 

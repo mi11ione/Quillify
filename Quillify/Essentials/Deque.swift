@@ -31,15 +31,15 @@ class Deque<T> {
     }
 
     func isEmpty() -> Bool {
-        return header.next === header
+        header.next === header
     }
 
     func peekFirst() -> T? {
-        return (header.next as? Node<T>)?.data
+        (header.next as? Node<T>)?.data
     }
 
     func peekLast() -> T? {
-        return (header.prev as? Node<T>)?.data
+        (header.prev as? Node<T>)?.data
     }
 }
 
@@ -56,8 +56,8 @@ private class ANode<T> {
 private class Sentinel<T>: ANode<T> {
     init() {
         super.init(next: nil, prev: nil)
-        self.next = self
-        self.prev = self
+        next = self
+        prev = self
     }
 }
 

@@ -18,10 +18,10 @@ class Canvas: UIViewController, PKCanvasViewDelegate, UIGestureRecognizerDelegat
     var selectMaxY: CGFloat?
 
     var selectRect: CGRect? {
-        guard let selectMinX = selectMinX,
-              let selectMaxX = selectMaxX,
-              let selectMinY = selectMinY,
-              let selectMaxY = selectMaxY else { return nil }
+        guard let selectMinX,
+              let selectMaxX,
+              let selectMinY,
+              let selectMaxY else { return nil }
         return CGRect(x: selectMinX, y: selectMinY,
                       width: abs(selectMaxX - selectMinX), height: abs(selectMaxY - selectMinY))
     }
@@ -52,42 +52,42 @@ class Canvas: UIViewController, PKCanvasViewDelegate, UIGestureRecognizerDelegat
         state.canvas = self
         canvasView.delegate = self
         let changeToolCancellable = state.$currentTool.sink { [weak self] tool in
-            guard let self = self else { return }
+            guard let self else { return }
             switch tool {
             case .pen:
-                self.imageRenderView?.isUserInteractionEnabled = false
-                self.canvasView.isUserInteractionEnabled = true
-                self.canvasView.drawingGestureRecognizer.isEnabled = true
-                self.canvasView.tool = PKInkingTool(.pen, color: state.currentColor.pencilKitColor)
+                imageRenderView?.isUserInteractionEnabled = false
+                canvasView.isUserInteractionEnabled = true
+                canvasView.drawingGestureRecognizer.isEnabled = true
+                canvasView.tool = PKInkingTool(.pen, color: state.currentColor.pencilKitColor)
             case .placePhoto:
-                self.imageRenderView?.isUserInteractionEnabled = true
-                self.canvasView.isUserInteractionEnabled = false
-                self.canvasView.drawingGestureRecognizer.isEnabled = false
-                self.canvasView.tool = PKInkingTool(.pen, color: state.currentColor.pencilKitColor)
+                imageRenderView?.isUserInteractionEnabled = true
+                canvasView.isUserInteractionEnabled = false
+                canvasView.drawingGestureRecognizer.isEnabled = false
+                canvasView.tool = PKInkingTool(.pen, color: state.currentColor.pencilKitColor)
             case .remove:
-                self.imageRenderView?.isUserInteractionEnabled = false
-                self.canvasView.isUserInteractionEnabled = true
-                self.canvasView.drawingGestureRecognizer.isEnabled = true
-                self.canvasView.tool = PKEraserTool(.vector)
+                imageRenderView?.isUserInteractionEnabled = false
+                canvasView.isUserInteractionEnabled = true
+                canvasView.drawingGestureRecognizer.isEnabled = true
+                canvasView.tool = PKEraserTool(.vector)
             case .selection:
-                self.imageRenderView?.isUserInteractionEnabled = false
-                self.canvasView.isUserInteractionEnabled = true
-                self.canvasView.drawingGestureRecognizer.isEnabled = true
-                self.canvasView.tool = PKLassoTool()
+                imageRenderView?.isUserInteractionEnabled = false
+                canvasView.isUserInteractionEnabled = true
+                canvasView.drawingGestureRecognizer.isEnabled = true
+                canvasView.tool = PKLassoTool()
             case .touch:
-                self.imageRenderView?.isUserInteractionEnabled = false
-                self.canvasView.isUserInteractionEnabled = true
-                self.canvasView.tool = PKInkingTool(.pen, color: state.currentColor.pencilKitColor)
-                self.canvasView.drawingGestureRecognizer.isEnabled = false
+                imageRenderView?.isUserInteractionEnabled = false
+                canvasView.isUserInteractionEnabled = true
+                canvasView.tool = PKInkingTool(.pen, color: state.currentColor.pencilKitColor)
+                canvasView.drawingGestureRecognizer.isEnabled = false
             }
         }
         cancellables.insert(changeToolCancellable)
 
         let colorCancellable = state.$currentColor.sink { [weak self] color in
-            guard let self = self else { return }
+            guard let self else { return }
             if state.currentTool == .pen {
-                self.canvasView.drawingGestureRecognizer.isEnabled = true
-                self.canvasView.tool = PKInkingTool(.pen, color: color.pencilKitColor)
+                canvasView.drawingGestureRecognizer.isEnabled = true
+                canvasView.tool = PKInkingTool(.pen, color: color.pencilKitColor)
             }
         }
 
@@ -169,10 +169,10 @@ class Canvas: UIViewController, PKCanvasViewDelegate, UIGestureRecognizerDelegat
     }
 
     private func updateSelectRect(_ translatedPoint: CGPoint) {
-        guard let selectMinX = selectMinX,
-              let selectMaxX = selectMaxX,
-              let selectMinY = selectMinY,
-              let selectMaxY = selectMaxY
+        guard let selectMinX,
+              let selectMaxX,
+              let selectMinY,
+              let selectMaxY
         else {
             selectMinX = translatedPoint.x
             selectMaxX = translatedPoint.x
@@ -202,7 +202,7 @@ class Canvas: UIViewController, PKCanvasViewDelegate, UIGestureRecognizerDelegat
 
     private func finishSelection() {
         if state.currentTool == .selection {
-            if let selectRect = selectRect {
+            if let selectRect {
                 var selection = Set<Int>()
                 for (index, path) in canvasView.drawing.strokes.enumerated() {
                     if selectRect.intersects(path.renderBounds) {

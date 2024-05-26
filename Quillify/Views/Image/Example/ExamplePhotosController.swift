@@ -1,6 +1,6 @@
-import UIKit
-import SwiftUI
 import Combine
+import SwiftUI
+import UIKit
 
 class ExamplePhotosController: UIViewController {
     var state: WindowState
@@ -8,22 +8,22 @@ class ExamplePhotosController: UIViewController {
     var cancellable: AnyCancellable? = nil
 
     init(windowState: WindowState) {
-        self.state = windowState
+        state = windowState
         super.init(nibName: nil, bundle: nil)
-        self.cancellable = state.$photoMode.sink { [weak self] mode in
-            guard let self = self else { return }
+        cancellable = state.$photoMode.sink { [weak self] mode in
+            guard let self else { return }
             if mode == .example {
                 let picker = UIHostingController(rootView: ExamplePhotosNavigationView(windowState: windowState))
                 self.picker = picker
-                self.present(picker, animated: true)
+                present(picker, animated: true)
             } else {
-                self.picker?.dismiss(animated: true)
+                picker?.dismiss(animated: true)
             }
         }
     }
 
     @available(*, unavailable)
-    required init?(coder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }

@@ -1,10 +1,10 @@
-import SwiftUI
 import PhotosUI
+import SwiftUI
 
 struct LibraryPhotoPickerView: UIViewControllerRepresentable {
     @ObservedObject var windowState: WindowState
 
-    func makeUIViewController(context: Context) -> UIViewController {
+    func makeUIViewController(context _: Context) -> UIViewController {
         let viewController = UIViewController()
         return viewController
     }
@@ -38,7 +38,7 @@ struct LibraryPhotoPickerView: UIViewControllerRepresentable {
             picker.dismiss(animated: true)
             guard let result = results.first else { return }
             result.itemProvider.loadObject(ofClass: UIImage.self) { [weak self] photo, _ in
-                guard let self = self, let image = photo as? UIImage else { return }
+                guard let self, let image = photo as? UIImage else { return }
                 Task {
                     await self.windowState.startConversion(image: image)
                 }

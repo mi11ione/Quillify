@@ -63,7 +63,7 @@ struct CanvasDrawView: View {
                         HStack {
                             Spacer()
                             if windowState.currentTool != .placePhoto {
-                                if (!hasSelection) {
+                                if !hasSelection {
                                     controls()
                                 }
                                 Button(action: { selectionAction() }) {

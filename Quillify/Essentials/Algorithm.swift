@@ -19,7 +19,7 @@ class ImagePathConverter {
 
     init(image: UIImage) {
         self.image = image
-        self.rgbaPixelData = image.rgbaPixelData()
+        rgbaPixelData = image.rgbaPixelData()
     }
 
     private lazy var groupedConnectedPixels: [Set<Point>] = {
@@ -82,7 +82,7 @@ class ImagePathConverter {
             let x = index % Int(self.image.size.width)
             let y = index / Int(self.image.size.width)
             let point = Point(x: x, y: y)
-            
+
             dispatchGroup.enter()
             concurrentQueue.async(flags: .barrier) {
                 growingStrokePixelArray.append(point)
@@ -109,8 +109,8 @@ class ImagePathConverter {
                                  Point(x: searchPoint.x - 1, y: searchPoint.y),
                                  Point(x: searchPoint.x + 1, y: searchPoint.y),
                                  Point(x: searchPoint.x, y: searchPoint.y + 1)].filter {
-                                    strokesSet.contains($0) && !visited.contains($0)
-                                 }
+                    strokesSet.contains($0) && !visited.contains($0)
+                }
                 searchPoints.append(contentsOf: neighbors)
                 stroke.insert(searchPoint)
                 visited.insert(searchPoint)
@@ -129,7 +129,8 @@ class ImagePathConverter {
                 if [Point(x: point.x, y: point.y - 1),
                     Point(x: point.x - 1, y: point.y),
                     Point(x: point.x + 1, y: point.y),
-                    Point(x: point.x, y: point.y + 1)].contains(where: { !group.contains($0) }) {
+                    Point(x: point.x, y: point.y + 1)].contains(where: { !group.contains($0) })
+                {
                     boundaries.insert(point)
                 }
             }
@@ -172,14 +173,14 @@ class ImagePathConverter {
             guard let initialPoint = centerLineSet.min(by: { $0.x + $0.y < $1.x + $1.y }) else { return }
             let deque = Deque<Point>()
             let findNeighbors: (Point) -> [Point] = { point in
-                return [Point(x: point.x, y: point.y - 1),
-                        Point(x: point.x - 1, y: point.y),
-                        Point(x: point.x + 1, y: point.y),
-                        Point(x: point.x, y: point.y + 1),
-                        Point(x: point.x - 1, y: point.y - 1),
-                        Point(x: point.x + 1, y: point.y - 1),
-                        Point(x: point.x - 1, y: point.y + 1),
-                        Point(x: point.x + 1, y: point.y + 1)].filter { centerLineSet.contains($0) }
+                [Point(x: point.x, y: point.y - 1),
+                 Point(x: point.x - 1, y: point.y),
+                 Point(x: point.x + 1, y: point.y),
+                 Point(x: point.x, y: point.y + 1),
+                 Point(x: point.x - 1, y: point.y - 1),
+                 Point(x: point.x + 1, y: point.y - 1),
+                 Point(x: point.x - 1, y: point.y + 1),
+                 Point(x: point.x + 1, y: point.y + 1)].filter { centerLineSet.contains($0) }
             }
             deque.addAtTail(initialPoint)
             var breadthVisited = Set<Point>()
@@ -225,14 +226,14 @@ class ImagePathConverter {
 
     private func averageColor(path: [Point]) -> UIColor {
         let numSamplePoints = min(10, path.count)
-        let sampleIndices = (0..<numSamplePoints).map { _ in Int.random(in: 0..<path.count) }
+        let sampleIndices = (0 ..< numSamplePoints).map { _ in Int.random(in: 0 ..< path.count) }
         let sampleColors = sampleIndices.compactMap { index -> (r: CGFloat, g: CGFloat, b: CGFloat)? in
             let samplePoint = path[index]
             guard let pixel = pixelAtPoint(samplePoint) else { return nil }
             return (CGFloat(pixel.r) / 255.0, CGFloat(pixel.g) / 255.0, CGFloat(pixel.b) / 255.0)
         }
         let sumColors = sampleColors.reduce((r: 0.0, g: 0.0, b: 0.0)) { colorSum, color in
-            return (colorSum.r + color.r, colorSum.g + color.g, colorSum.b + color.b)
+            (colorSum.r + color.r, colorSum.g + color.g, colorSum.b + color.b)
         }
         return UIColor(
             red: sumColors.r / CGFloat(numSamplePoints),
@@ -354,14 +355,14 @@ private class Connectivity {
     private func isRequired(point: Point, group: Set<Point>) -> (simd_float3x3) -> Bool {
         let neighbors = [
             Point(x: point.x - 1, y: point.y - 1), Point(x: point.x, y: point.y - 1), Point(x: point.x + 1, y: point.y - 1),
-            Point(x: point.x - 1, y: point.y),     Point(x: point.x, y: point.y),     Point(x: point.x + 1, y: point.y),
-            Point(x: point.x - 1, y: point.y + 1), Point(x: point.x, y: point.y + 1), Point(x: point.x + 1, y: point.y + 1)
+            Point(x: point.x - 1, y: point.y), Point(x: point.x, y: point.y), Point(x: point.x + 1, y: point.y),
+            Point(x: point.x - 1, y: point.y + 1), Point(x: point.x, y: point.y + 1), Point(x: point.x + 1, y: point.y + 1),
         ].map { group.contains($0) ? Float(1) : Float(-1) }
 
         let matrix = simd_float3x3(rows: [
             SIMD3<Float>(neighbors[0], neighbors[1], neighbors[2]),
             SIMD3<Float>(neighbors[3], neighbors[4], neighbors[5]),
-            SIMD3<Float>(neighbors[6], neighbors[7], neighbors[8])
+            SIMD3<Float>(neighbors[6], neighbors[7], neighbors[8]),
         ])
 
         return { mask in
@@ -380,11 +381,11 @@ private class Connectivity {
     }
 
     func isEdge(point: Point, group: Set<Point>) -> Bool {
-        return edgeMasks.contains(where: isRequired(point: point, group: group))
+        edgeMasks.contains(where: isRequired(point: point, group: group))
     }
 
     func isRequiredForConnectivity(point: Point, group: Set<Point>) -> Bool {
-        return hitMissMasks.contains(where: isRequired(point: point, group: group))
+        hitMissMasks.contains(where: isRequired(point: point, group: group))
     }
 }
 
@@ -396,7 +397,7 @@ private extension UIImage {
         let context = CGContext(data: &pixelData, width: Int(size.width), height: Int(size.height),
                                 bitsPerComponent: 8, bytesPerRow: 4 * Int(size.width), space: colorSpace,
                                 bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue)
-        guard let cgImage = cgImage else { return nil }
+        guard let cgImage else { return nil }
         context?.draw(cgImage, in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
         return pixelData
     }
@@ -527,7 +528,7 @@ private final class PathDetectionKernel {
             encode(source: imageTexture, destination: outputTexture, in: commandBuffer)
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()
-            kernelImages.append(try textureManager.cgImage(texture: outputTexture))
+            try kernelImages.append(textureManager.cgImage(texture: outputTexture))
         }
 
         guard let combinedImage = kernelImages.reduce(nil as CGImage?, { lastImage, nextImage in

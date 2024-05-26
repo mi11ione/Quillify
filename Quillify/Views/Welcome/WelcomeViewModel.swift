@@ -21,11 +21,11 @@ class WelcomeViewModel: ObservableObject {
     func buttonMessage() -> String {
         switch welcomeState {
         case .welcomeMessage:
-            return "Интересно"
+            "Интересно"
         case .learnTools:
-            return "Го рисовать"
+            "Го рисовать"
         case .selectPhoto:
-            return ""
+            ""
         }
     }
 }

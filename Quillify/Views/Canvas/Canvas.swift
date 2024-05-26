@@ -1,8 +1,8 @@
-import PencilKit
 import Combine
-import SwiftUI
 import CoreGraphics
 import PDFKit
+import PencilKit
+import SwiftUI
 
 class Canvas: UIViewController, PKCanvasViewDelegate, UIGestureRecognizerDelegate {
     static var canvasSize: CGSize = .init(width: 1200, height: 1200)

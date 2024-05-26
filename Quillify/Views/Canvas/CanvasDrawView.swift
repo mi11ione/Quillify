@@ -124,19 +124,20 @@ struct CanvasDrawView: View {
             VStack {
                 HStack {
                     Spacer()
-                        if showTools {
-                            Button(action: {
-                                showTools = false
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    if let window = UIApplication.shared.connectedScenes
-                                        .compactMap({ $0 as? UIWindowScene })
-                                        .flatMap({ $0.windows })
-                                        .first(where: { $0.isKeyWindow }) {
-                                        exportToPDF(windowState: windowState, view: window.rootViewController?.view ?? UIView())
-                                        showTools = true
-                                    }
+                    if showTools {
+                        Button(action: {
+                            showTools = false
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                if let window = UIApplication.shared.connectedScenes
+                                    .compactMap({ $0 as? UIWindowScene })
+                                    .flatMap(\.windows)
+                                    .first(where: { $0.isKeyWindow })
+                                {
+                                    exportToPDF(windowState: windowState, view: window.rootViewController?.view ?? UIView())
+                                    showTools = true
                                 }
-                            }) {
+                            }
+                        }) {
                             Image(systemName: "square.and.arrow.up")
                                 .font(.title)
                                 .foregroundColor(.black)
@@ -335,20 +336,21 @@ struct CanvasDrawView: View {
         }
     }
 
-    func exportToPDF(windowState: WindowState, view: UIView) {
+    func exportToPDF(windowState _: WindowState, view: UIView) {
         let pdfRenderer = UIGraphicsPDFRenderer(bounds: CGRect(origin: .zero, size: .init(width: 1200, height: 1200)))
         let data = pdfRenderer.pdfData { context in
             context.beginPage()
             view.layer.render(in: context.cgContext)
         }
-        
+
         let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("canvas.pdf")
         do {
             try data.write(to: tempURL)
             let activityVC = UIActivityViewController(activityItems: [tempURL], applicationActivities: nil)
-            
+
             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-               let keyWindow = windowScene.windows.first(where: { $0.isKeyWindow }) {
+               let keyWindow = windowScene.windows.first(where: { $0.isKeyWindow })
+            {
                 if let popoverController = activityVC.popoverPresentationController {
                     popoverController.sourceView = keyWindow.rootViewController?.view
                     popoverController.sourceRect = CGRect(x: keyWindow.rootViewController?.view.bounds.midX ?? 0, y: keyWindow.rootViewController?.view.bounds.midY ?? 0, width: 0, height: 0)
@@ -360,5 +362,4 @@ struct CanvasDrawView: View {
             print("Error exporting to PDF: \(error)")
         }
     }
-
 }

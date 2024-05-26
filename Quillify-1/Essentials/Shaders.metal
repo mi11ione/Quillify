@@ -1,10 +1,3 @@
-//
-//  Shaders.metal
-//  Quillify
-//
-//  Created by mi11ion on 17/4/24.
-//
-
 #include <metal_stdlib>
 using namespace metal;
 
@@ -40,9 +33,7 @@ kernel void correlation_filter(texture2d<float, access::read> inTexture [[textur
             const auto sample = inTexture.read(uint2(i,j));
             float sampleBrightness = luminance(sample.rgb);
             sampleSumBrightness += sampleBrightness;
-            
-            // Bivariate Gaussian Distribution:
-            // e^(1/2 (-x^2/1^2 - y^2/σ^2))/(2π σ^2)
+
             const int x = i - position.x;
             const int y = j - position.y;
             float gaussianSample = (pow(2.718, 0.5 * (-1 * (pow(x, 2.0)/pow(sigma, 2.0)) + (-1 * (pow(y, 2.0)/pow(sigma, 2.0)))))) / (2.0 * 3.1415 * pow(sigma, 2.0));
@@ -61,9 +52,7 @@ kernel void correlation_filter(texture2d<float, access::read> inTexture [[textur
         for (int j = max(0, int(position.y) - int(size)); j < min(int(textureSize.y), int(position.y) + int(size)); j++) {
             const auto sample = inTexture.read(uint2(i,j));
             float sampleBrightness = luminance(sample.rgb);
-            
-            // Bivariate Gaussian Distribution:
-            // e^(1/2 (-x^2/1^2 - y^2/σ^2))/(2π σ^2)
+
             const int x = i - position.x;
             const int y = j - position.y;
             float gaussianSample = (pow(2.718, 0.5 * (-1 * (pow(x, 2.0)/pow(sigma, 2.0)) + (-1 * (pow(y, 2.0)/pow(sigma, 2.0)))))) / (2.0 * 3.1415 * pow(sigma, 2.0));

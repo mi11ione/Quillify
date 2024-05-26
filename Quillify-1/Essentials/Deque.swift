@@ -1,81 +1,63 @@
-//
-//  Deque.swift
-//  Quillify
-//
-//  Created by mi11ion on 17/4/24.
-//
-
 import Foundation
 
-// Normally I would use Swift Collections, but since loading
-// dependencies requires a network connection, I opted to
-// implement my own double-ended queue
 class Deque<T> {
     private let header: Sentinel<T>
 
     init() {
-        header = Sentinel()
+        header = Sentinel<T>()
     }
 
     func popFirst() -> T? {
-        header.popFirst()
+        guard let first = header.next as? Node<T> else { return nil }
+        header.next = first.next
+        first.next?.prev = header
+        return first.data
     }
 
     func popLast() -> T? {
-        header.popLast()
+        guard let last = header.prev as? Node<T> else { return nil }
+        header.prev = last.prev
+        last.prev?.next = header
+        return last.data
     }
 
     func addAtTail(_ item: T) {
-        header.addAtTail(item)
-    }
-}
-
-// Create a doubly linked list structure of a generic type
-private protocol NodeProtocol {
-    associatedtype T
-    associatedtype U: NodeProtocol where U.T == T
-    var next: U? { get set }
-    var prev: U? { get set }
-}
-
-// This class should not be created directly, only its
-// subclasses should be used in a linked list
-private class ANode<T>: NodeProtocol {
-    typealias T = T
-    typealias U = ANode<T>
-
-    weak var next: U? = nil
-    var prev: U? = nil
-
-    func getData() -> T? {
-        nil
-    }
-}
-
-// The sentinel stores the head and tail elements of the deque
-private class Sentinel<T>: ANode<T> {
-    func popFirst() -> T? {
-        let prev = prev
-        self.prev = prev?.next
-        return prev?.getData()
-    }
-
-    func popLast() -> T? {
-        let next = next
-        self.next = next?.prev
-        return next?.getData()
-    }
-
-    func addAtTail(_ item: T) {
-        guard let next = next else {
-            let node = Node<T>(item, next: self, prev: self)
-            prev = node
-            self.next = node
-            return
+        let node = Node(item, next: header, prev: header.prev)
+        header.prev?.next = node
+        header.prev = node
+        if header.next === header {
+            header.next = node
         }
-        let node = Node<T>(item, next: self, prev: self.next)
-        next.next = node
-        self.next = node
+    }
+
+    func isEmpty() -> Bool {
+        return header.next === header
+    }
+
+    func peekFirst() -> T? {
+        return (header.next as? Node<T>)?.data
+    }
+
+    func peekLast() -> T? {
+        return (header.prev as? Node<T>)?.data
+    }
+}
+
+private class ANode<T> {
+    var next: ANode?
+    var prev: ANode?
+
+    init(next: ANode? = nil, prev: ANode? = nil) {
+        self.next = next
+        self.prev = prev
+    }
+}
+
+private class Sentinel<T>: ANode<T> {
+    init() {
+        super.init(next: nil, prev: nil)
+        self.next = self
+        self.prev = self
     }
 }
 
@@ -84,12 +66,6 @@ private class Node<T>: ANode<T> {
 
     init(_ data: T, next: ANode<T>?, prev: ANode<T>?) {
         self.data = data
-        super.init()
-        self.next = next
-        self.prev = prev
-    }
-
-    override func getData() -> T? {
-        data
+        super.init(next: next, prev: prev)
     }
 }

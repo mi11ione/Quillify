@@ -1,10 +1,3 @@
-//
-//  Algorithm.swift
-//  Quillify
-//
-//  Created by mi11ion on 17/4/24.
-//
-
 import MetalKit
 import PencilKit
 import simd

@@ -4,7 +4,8 @@ struct CanvasDrawView: View {
     @ObservedObject var windowState: WindowState
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.colorScheme) var colorScheme
-    @State var showingFinalizeView: Bool = false
+    @State private var showingFinalizeView: Bool = false
+    @State private var showTools: Bool = true
 
     let colorColumns = [
         GridItem(.adaptive(minimum: 30)),
@@ -37,86 +38,119 @@ struct CanvasDrawView: View {
             CanvasView(windowState: windowState)
                 .transition(.opacity)
                 .ignoresSafeArea()
-            VStack {
-                if horizontalSizeClass == .compact {
-                    Spacer()
-                    penColorPicker()
-                        .zIndex(0)
-                        .padding()
-                    selectionColorPicker()
-                        .zIndex(0)
-                        .padding()
-                }
-                if windowState.currentTool != .placePhoto {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: .greatestFiniteMagnitude, style: .continuous)
-                            .foregroundColor(Color(uiColor: UIColor.systemGray5))
-                        HStack {
-                            Spacer()
-                            if windowState.currentTool != .placePhoto {
-                                if !hasSelection {
-                                    controls()
-                                }
-                                Button(action: { selectionAction() }) {
-                                    Image(systemName: "lasso")
-                                        .font(.largeTitle)
-                                        .foregroundColor(windowState.currentTool == .selection ? .primary : .secondary)
-                                        .frame(width: 50)
-                                }
-                                .accessibilityLabel("Выделение")
-                                .accessibility(addTraits: windowState.currentTool == .selection ? .isSelected : [])
-                                if hasSelection {
-                                    Spacer()
-                                    selectionControls()
-                                }
-                            }
-                            Spacer()
-                        }
+            if showTools {
+                VStack {
+                    if horizontalSizeClass == .compact {
+                        Spacer()
+                        penColorPicker()
+                            .zIndex(0)
+                            .padding()
+                        selectionColorPicker()
+                            .zIndex(0)
+                            .padding()
                     }
-                    .frame(minWidth: nil, idealWidth: toolWidth, maxWidth: toolWidth, minHeight: nil, idealHeight: 70, maxHeight: 70, alignment: .center)
-                    .transition(.opacity.combined(with: .move(edge: horizontalSizeClass == .compact ? .bottom : .top)))
-                    .zIndex(1)
-                    .padding(.horizontal)
-                }
-                if let imageConversion = windowState.imageConversion {
-                    ZStack {
-                        if imageConversion.isConversionFinished {
-                            Button(action: {
-                                windowState.placeImage()
-                            }) {
-                                Text("Разместить")
-                                    .font(.headline)
-                                    .bold()
-                                    .foregroundColor(Color(uiColor: UIColor.systemBackground))
+                    if windowState.currentTool != .placePhoto {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: .greatestFiniteMagnitude, style: .continuous)
+                                .foregroundColor(Color(uiColor: UIColor.systemGray5))
+                            HStack {
+                                Spacer()
+                                if windowState.currentTool != .placePhoto {
+                                    if !hasSelection {
+                                        controls()
+                                    }
+                                    Button(action: { selectionAction() }) {
+                                        Image(systemName: "lasso")
+                                            .font(.largeTitle)
+                                            .foregroundColor(windowState.currentTool == .selection ? .primary : .secondary)
+                                            .frame(width: 50)
+                                    }
+                                    .accessibilityLabel("Выделение")
+                                    .accessibility(addTraits: windowState.currentTool == .selection ? .isSelected : [])
+                                    if hasSelection {
+                                        Spacer()
+                                        selectionControls()
+                                    }
+                                }
+                                Spacer()
+                            }
+                        }
+                        .frame(minWidth: nil, idealWidth: toolWidth, maxWidth: toolWidth, minHeight: nil, idealHeight: 70, maxHeight: 70, alignment: .center)
+                        .transition(.opacity.combined(with: .move(edge: horizontalSizeClass == .compact ? .bottom : .top)))
+                        .zIndex(1)
+                        .padding(.horizontal)
+                    }
+                    if let imageConversion = windowState.imageConversion {
+                        ZStack {
+                            if imageConversion.isConversionFinished {
+                                Button(action: {
+                                    windowState.placeImage()
+                                }) {
+                                    Text("Разместить")
+                                        .font(.headline)
+                                        .bold()
+                                        .foregroundColor(Color(uiColor: UIColor.systemBackground))
+                                        .padding()
+                                        .frame(width: 200)
+                                        .background(Color.accentColor)
+                                        .cornerRadius(.greatestFiniteMagnitude)
+                                }
+                            } else {
+                                ProgressView()
+                                    .padding(.horizontal, 70)
                                     .padding()
-                                    .frame(width: 200)
-                                    .background(Color.accentColor)
-                                    .cornerRadius(.greatestFiniteMagnitude)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 50)
+                                            .fill(Color.white)
+                                            .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 5)
+                                    )
                             }
-                        } else {
-                            ProgressView()
-                                .padding(.horizontal, 70)
-                                .padding()
-                                .background(
-                                    RoundedRectangle(cornerRadius: 50)
-                                        .fill(Color.white)
-                                        .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 5)
-                                )
                         }
+                        .frame(minWidth: nil, idealWidth: toolWidth, maxWidth: toolWidth, minHeight: nil, idealHeight: 70, maxHeight: 70, alignment: .center)
+                        .zIndex(2)
+                        .padding(.horizontal)
                     }
-                    .frame(minWidth: nil, idealWidth: toolWidth, maxWidth: toolWidth, minHeight: nil, idealHeight: 70, maxHeight: 70, alignment: .center)
-                    .zIndex(2)
-                    .padding(.horizontal)
+                    if horizontalSizeClass != .compact {
+                        penColorPicker()
+                            .zIndex(0)
+                            .padding()
+                        selectionColorPicker()
+                            .zIndex(0)
+                            .padding()
+                        Spacer()
+                    }
                 }
-                if horizontalSizeClass != .compact {
-                    penColorPicker()
-                        .zIndex(0)
-                        .padding()
-                    selectionColorPicker()
-                        .zIndex(0)
-                        .padding()
+            }
+            VStack {
+                HStack {
                     Spacer()
+                        if showTools {
+                            Button(action: {
+                                showTools = false
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    if let window = UIApplication.shared.connectedScenes
+                                        .compactMap({ $0 as? UIWindowScene })
+                                        .flatMap({ $0.windows })
+                                        .first(where: { $0.isKeyWindow }) {
+                                        exportToPDF(windowState: windowState, view: window.rootViewController?.view ?? UIView())
+                                        showTools = true
+                                    }
+                                }
+                            }) {
+                            Image(systemName: "square.and.arrow.up")
+                                .font(.title)
+                                .foregroundColor(.black)
+                                .padding()
+                                .padding(.horizontal, 3)
+                                .background(Color.white)
+                                .cornerRadius(25)
+                                .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 2)
+                        }
+                        .padding(.top, 10)
+                        .padding(.trailing, 20)
+                    }
                 }
+                Spacer()
             }
         }
     }
@@ -300,4 +334,31 @@ struct CanvasDrawView: View {
             windowState.currentTool = .selection
         }
     }
+
+    func exportToPDF(windowState: WindowState, view: UIView) {
+        let pdfRenderer = UIGraphicsPDFRenderer(bounds: CGRect(origin: .zero, size: .init(width: 1200, height: 1200)))
+        let data = pdfRenderer.pdfData { context in
+            context.beginPage()
+            view.layer.render(in: context.cgContext)
+        }
+        
+        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("canvas.pdf")
+        do {
+            try data.write(to: tempURL)
+            let activityVC = UIActivityViewController(activityItems: [tempURL], applicationActivities: nil)
+            
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let keyWindow = windowScene.windows.first(where: { $0.isKeyWindow }) {
+                if let popoverController = activityVC.popoverPresentationController {
+                    popoverController.sourceView = keyWindow.rootViewController?.view
+                    popoverController.sourceRect = CGRect(x: keyWindow.rootViewController?.view.bounds.midX ?? 0, y: keyWindow.rootViewController?.view.bounds.midY ?? 0, width: 0, height: 0)
+                    popoverController.permittedArrowDirections = []
+                }
+                keyWindow.rootViewController?.present(activityVC, animated: true, completion: nil)
+            }
+        } catch {
+            print("Error exporting to PDF: \(error)")
+        }
+    }
+
 }

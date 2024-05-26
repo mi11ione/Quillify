@@ -2,7 +2,6 @@ import MetalKit
 import PencilKit
 import simd
 import SwiftUI
-import UIKit
 
 private struct Point: Hashable {
     let x, y: Int

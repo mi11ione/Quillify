@@ -1,6 +1,5 @@
 import Combine
 import SwiftUI
-import UIKit
 
 class ExamplePhotosController: UIViewController {
     var state: WindowState

@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ExamplePhotosNavigationView: View {
+struct ExamplePhotosGridView: View {
     @ObservedObject var windowState: WindowState
     let photoColumns = [GridItem](repeating: GridItem(.flexible(), spacing: 1), count: 3)
 

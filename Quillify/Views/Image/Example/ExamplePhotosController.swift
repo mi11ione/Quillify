@@ -3,7 +3,7 @@ import SwiftUI
 
 class ExamplePhotosController: UIViewController {
     var state: WindowState
-    var picker: UIHostingController<ExamplePhotosNavigationView>?
+    var picker: UIHostingController<ExamplePhotosGridView>?
     var cancellable: AnyCancellable? = nil
 
     init(windowState: WindowState) {
@@ -12,7 +12,7 @@ class ExamplePhotosController: UIViewController {
         cancellable = state.$photoMode.sink { [weak self] mode in
             guard let self else { return }
             if mode == .example {
-                let picker = UIHostingController(rootView: ExamplePhotosNavigationView(windowState: windowState))
+                let picker = UIHostingController(rootView: ExamplePhotosGridView(windowState: windowState))
                 self.picker = picker
                 present(picker, animated: true)
             } else {

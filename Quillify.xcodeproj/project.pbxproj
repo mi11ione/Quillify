@@ -21,7 +21,7 @@
 		334745852C0343C4005D57FA /* CameraScanViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745612C0343C4005D57FA /* CameraScanViewModel.swift */; };
 		334745862C0343C4005D57FA /* ExamplePhotos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745632C0343C4005D57FA /* ExamplePhotos.swift */; };
 		334745872C0343C4005D57FA /* ExamplePhotosController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745642C0343C4005D57FA /* ExamplePhotosController.swift */; };
-		334745882C0343C4005D57FA /* ExamplePhotosNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745652C0343C4005D57FA /* ExamplePhotosNavigationView.swift */; };
+		334745882C0343C4005D57FA /* ExamplePhotosGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745652C0343C4005D57FA /* ExamplePhotosGridView.swift */; };
 		334745892C0343C4005D57FA /* ExamplePhotosView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745662C0343C4005D57FA /* ExamplePhotosView.swift */; };
 		3347458A2C0343C4005D57FA /* LibraryPhotoPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745682C0343C4005D57FA /* LibraryPhotoPickerView.swift */; };
 		3347458B2C0343C4005D57FA /* PhotoPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745692C0343C4005D57FA /* PhotoPickerView.swift */; };
@@ -53,7 +53,7 @@
 		334745612C0343C4005D57FA /* CameraScanViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraScanViewModel.swift; sourceTree = "<group>"; };
 		334745632C0343C4005D57FA /* ExamplePhotos.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExamplePhotos.swift; sourceTree = "<group>"; };
 		334745642C0343C4005D57FA /* ExamplePhotosController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExamplePhotosController.swift; sourceTree = "<group>"; };
-		334745652C0343C4005D57FA /* ExamplePhotosNavigationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExamplePhotosNavigationView.swift; sourceTree = "<group>"; };
+		334745652C0343C4005D57FA /* ExamplePhotosGridView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExamplePhotosGridView.swift; sourceTree = "<group>"; };
 		334745662C0343C4005D57FA /* ExamplePhotosView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExamplePhotosView.swift; sourceTree = "<group>"; };
 		334745682C0343C4005D57FA /* LibraryPhotoPickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LibraryPhotoPickerView.swift; sourceTree = "<group>"; };
 		334745692C0343C4005D57FA /* PhotoPickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoPickerView.swift; sourceTree = "<group>"; };
@@ -151,7 +151,7 @@
 			children = (
 				334745632C0343C4005D57FA /* ExamplePhotos.swift */,
 				334745642C0343C4005D57FA /* ExamplePhotosController.swift */,
-				334745652C0343C4005D57FA /* ExamplePhotosNavigationView.swift */,
+				334745652C0343C4005D57FA /* ExamplePhotosGridView.swift */,
 				334745662C0343C4005D57FA /* ExamplePhotosView.swift */,
 			);
 			path = Example;
@@ -293,7 +293,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				334745982C03449C005D57FA /* QuillifyApp.swift in Sources */,
-				334745882C0343C4005D57FA /* ExamplePhotosNavigationView.swift in Sources */,
+				334745882C0343C4005D57FA /* ExamplePhotosGridView.swift in Sources */,
 				334745912C0343C4005D57FA /* WelcomeViewModel.swift in Sources */,
 				334745872C0343C4005D57FA /* ExamplePhotosController.swift in Sources */,
 				339BE9242C03656E0074FC47 /* ImageConversion.swift in Sources */,

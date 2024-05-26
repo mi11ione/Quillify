@@ -1,10 +1,3 @@
-//
-//  PhotoPickerView.swift
-//  Quillify
-//
-//  Created by mi11ion on 19/3/24.
-//
-
 import SwiftUI
 
 struct PhotoPickerView: View {
@@ -53,9 +46,7 @@ struct PhotoPickerView: View {
                             Spacer()
                         }
                         .padding()
-                        .background {
-                            Color(uiColor: .systemGray6)
-                        }
+                        .background(Color(uiColor: .systemGray6))
                         .cornerRadius(10)
                     }
                     .accessibilityLabel(Text("Сканирование"))
@@ -80,13 +71,12 @@ struct PhotoPickerView: View {
                             Spacer()
                         }
                         .padding()
-                        .background {
-                            Color(uiColor: .systemGray6)
-                        }
+                        .background(Color(uiColor: .systemGray6))
                         .cornerRadius(10)
                     }
                     .accessibilityLabel(Text("Галерея"))
                     .padding(.vertical, 5)
+
                     Button(action: { withAnimation { windowState.photoMode = .example }}) {
                         HStack {
                             Image(systemName: "photo.on.rectangle.angled").font(.largeTitle)
@@ -106,9 +96,7 @@ struct PhotoPickerView: View {
                             Spacer()
                         }
                         .padding()
-                        .background {
-                            Color(uiColor: .systemGray6)
-                        }
+                        .background(Color(uiColor: .systemGray6))
                         .cornerRadius(10)
                     }
                     .accessibilityLabel(Text("Демо"))

@@ -1,10 +1,3 @@
-//
-//  Canvas.swift
-//  Quillify
-//
-//  Created by mi11ion on 19/3/24.
-//
-
 import Combine
 import CoreGraphics
 import Foundation
@@ -12,14 +5,12 @@ import PencilKit
 import SwiftUI
 
 class Canvas: UIViewController, PKCanvasViewDelegate, UIGestureRecognizerDelegate {
-    // Really large canvas!
     static var canvasSize: CGSize = .init(width: 10000, height: 10000)
     var state: WindowState
 
     var didScrollToOffset = false
     var cancellables = Set<AnyCancellable>()
 
-    // Workaround to get approximate selection
     var selectionGestureRecognizer: UIPanGestureRecognizer?
     var selectMinX: CGFloat?
     var selectMaxX: CGFloat?
@@ -203,14 +194,12 @@ class Canvas: UIViewController, PKCanvasViewDelegate, UIGestureRecognizerDelegat
         }
     }
 
-    /// Find where the center of the screen is in canvas space
     func getCenterScreenCanvasPosition() async -> CGPoint {
         let contentOffset = canvasView.contentOffset
         return CGPoint(x: contentOffset.x + (view.bounds.width / 2),
                        y: contentOffset.y + (view.bounds.height / 2))
     }
 
-    // Update selection
     private func finishSelection() {
         if state.currentTool == .selection {
             if let selectRect = selectRect {
@@ -269,11 +258,9 @@ class Canvas: UIViewController, PKCanvasViewDelegate, UIGestureRecognizerDelegat
 
 class ImageRenderView: UIView, UIGestureRecognizerDelegate {
     private var state: WindowState
-    // Image resizing
     private var imageScale: CGAffineTransform = .identity
     private var imageTranslation: CGAffineTransform = .identity
 
-    // Move image with gestures
     var pinchGesture: UIPinchGestureRecognizer?
     var panGesture: UIPanGestureRecognizer?
     private var cancellables = Set<AnyCancellable>()
@@ -285,8 +272,6 @@ class ImageRenderView: UIView, UIGestureRecognizerDelegate {
         super.init(frame: frame)
         backgroundColor = .clear
 
-        // If the current tool changes, update the number of touches required
-        // to trigger the pan gesture to allow the tools to be used
         let toolChange = state.$currentTool.sink(receiveValue: { [weak self] tool in
             if tool == .touch || tool == .placePhoto {
                 self?.panGesture?.isEnabled = true
@@ -321,7 +306,6 @@ class ImageRenderView: UIView, UIGestureRecognizerDelegate {
 
     @objc
     func handlePinch(_ sender: UIPinchGestureRecognizer) {
-        // Scale the image that is being converted
         let transform = CGAffineTransform(scaleX: sender.scale, y: sender.scale)
         let updateScale = {
             switch self.state.currentTool {
@@ -359,7 +343,6 @@ class ImageRenderView: UIView, UIGestureRecognizerDelegate {
 
     @objc
     func handlePan(_ sender: UIPanGestureRecognizer) {
-        // Scale the image that is being converted
         let point = sender.translation(in: self)
 
         let translation = CGAffineTransform(translationX: point.x, y: point.y)
@@ -402,20 +385,16 @@ class ImageRenderView: UIView, UIGestureRecognizerDelegate {
     }
 
     override func draw(_: CGRect) {
-        // Convert screen rect to canvas space
         guard let context = UIGraphicsGetCurrentContext() else { return }
 
-        // Draw the image that's being placed
         if let imageConversion = state.imageConversion {
             let size = imageConversion.image.size
-            // Find the correct position in this view's space
             var rect = CGRect(x: 0, y: 0, width: size.width, height: size.height)
             rect = rect.applying(imageConversion.scaleTransform)
             rect = rect.applying(imageScale)
             rect = rect.applying(imageConversion.translateTransform)
             rect = rect.applying(imageTranslation)
             rect = rect.applying(.init(translationX: -canvasView.contentOffset.x, y: -canvasView.contentOffset.y))
-            // The image needs to be flipped vertically
             context.saveGState()
             context.translateBy(x: 0, y: rect.origin.y + rect.height)
             context.scaleBy(x: 1, y: -1)

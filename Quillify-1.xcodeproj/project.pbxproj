@@ -10,12 +10,17 @@
 		332B7D9E2C03289B00ED8F53 /* WelcomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B7D9D2C03289B00ED8F53 /* WelcomeViewModel.swift */; };
 		332B7DA02C032A4C00ED8F53 /* CameraScanViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B7D9F2C032A4C00ED8F53 /* CameraScanViewModel.swift */; };
 		332B7DA22C032DD700ED8F53 /* WelcomeOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B7DA12C032DD700ED8F53 /* WelcomeOverlay.swift */; };
+		332B7DA92C0338CE00ED8F53 /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B7DA82C0338CE00ED8F53 /* Canvas.swift */; };
+		332B7DAF2C033BC800ED8F53 /* ExamplePhotosNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B7DAE2C033BC800ED8F53 /* ExamplePhotosNavigationView.swift */; };
+		332B7DB22C033BF200ED8F53 /* LibraryPhotoPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B7DB12C033BF200ED8F53 /* LibraryPhotoPickerView.swift */; };
+		332B7DB42C033C3900ED8F53 /* ExamplePhotosController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B7DB32C033C3900ED8F53 /* ExamplePhotosController.swift */; };
+		332B7DB62C033C4D00ED8F53 /* ExamplePhotosView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332B7DB52C033C4D00ED8F53 /* ExamplePhotosView.swift */; };
 		33A109BA2BCFF6F500830066 /* Deque.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A109B92BCFF6F500830066 /* Deque.swift */; };
 		33A109BC2BCFF71200830066 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 33A109BB2BCFF71200830066 /* Shaders.metal */; };
 		33A109BE2BCFF7AC00830066 /* Algorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A109BD2BCFF7AC00830066 /* Algorithm.swift */; };
 		33A109C12BCFF85900830066 /* CameraScan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A109C02BCFF85900830066 /* CameraScan.swift */; };
 		33A109C32BCFF87600830066 /* CameraScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A109C22BCFF87600830066 /* CameraScanView.swift */; };
-		33A109C52BCFF8A900830066 /* Example.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A109C42BCFF8A900830066 /* Example.swift */; };
+		33A109C52BCFF8A900830066 /* ExamplePhotos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A109C42BCFF8A900830066 /* ExamplePhotos.swift */; };
 		33B392682BAA25A000E2DFE0 /* Quillify_1App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B392672BAA25A000E2DFE0 /* Quillify_1App.swift */; };
 		33B3926A2BAA25A000E2DFE0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B392692BAA25A000E2DFE0 /* ContentView.swift */; };
 		33B3926C2BAA25A100E2DFE0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33B3926B2BAA25A100E2DFE0 /* Assets.xcassets */; };
@@ -23,10 +28,8 @@
 		33B3927B2BAA28F100E2DFE0 /* WelcomeState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B3927A2BAA28F100E2DFE0 /* WelcomeState.swift */; };
 		33B3927D2BAA292600E2DFE0 /* WelcomeMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B3927C2BAA292600E2DFE0 /* WelcomeMessageView.swift */; };
 		33B392802BAA296800E2DFE0 /* PhotoPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B3927F2BAA296800E2DFE0 /* PhotoPickerView.swift */; };
-		33B392822BAA298100E2DFE0 /* LibraryPhotoPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B392812BAA298100E2DFE0 /* LibraryPhotoPicker.swift */; };
 		33B392862BAA29B900E2DFE0 /* ToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B392852BAA29B900E2DFE0 /* ToolsView.swift */; };
 		33B392882BAA29E800E2DFE0 /* WindowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B392872BAA29E800E2DFE0 /* WindowState.swift */; };
-		33B3928B2BAA2A3100E2DFE0 /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B3928A2BAA2A3100E2DFE0 /* Canvas.swift */; };
 		33B3928D2BAA2A7200E2DFE0 /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B3928C2BAA2A7200E2DFE0 /* CanvasView.swift */; };
 		33B3928F2BAA2AE100E2DFE0 /* CanvasDrawView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B3928E2BAA2AE100E2DFE0 /* CanvasDrawView.swift */; };
 		33EA26182C03209200F61380 /* ToolsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33EA26172C03209200F61380 /* ToolsViewModel.swift */; };
@@ -36,12 +39,17 @@
 		332B7D9D2C03289B00ED8F53 /* WelcomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewModel.swift; sourceTree = "<group>"; };
 		332B7D9F2C032A4C00ED8F53 /* CameraScanViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraScanViewModel.swift; sourceTree = "<group>"; };
 		332B7DA12C032DD700ED8F53 /* WelcomeOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeOverlay.swift; sourceTree = "<group>"; };
+		332B7DA82C0338CE00ED8F53 /* Canvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Canvas.swift; sourceTree = "<group>"; };
+		332B7DAE2C033BC800ED8F53 /* ExamplePhotosNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamplePhotosNavigationView.swift; sourceTree = "<group>"; };
+		332B7DB12C033BF200ED8F53 /* LibraryPhotoPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryPhotoPickerView.swift; sourceTree = "<group>"; };
+		332B7DB32C033C3900ED8F53 /* ExamplePhotosController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamplePhotosController.swift; sourceTree = "<group>"; };
+		332B7DB52C033C4D00ED8F53 /* ExamplePhotosView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamplePhotosView.swift; sourceTree = "<group>"; };
 		33A109B92BCFF6F500830066 /* Deque.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deque.swift; sourceTree = "<group>"; };
 		33A109BB2BCFF71200830066 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		33A109BD2BCFF7AC00830066 /* Algorithm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Algorithm.swift; sourceTree = "<group>"; };
 		33A109C02BCFF85900830066 /* CameraScan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraScan.swift; sourceTree = "<group>"; };
 		33A109C22BCFF87600830066 /* CameraScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraScanView.swift; sourceTree = "<group>"; };
-		33A109C42BCFF8A900830066 /* Example.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Example.swift; sourceTree = "<group>"; };
+		33A109C42BCFF8A900830066 /* ExamplePhotos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamplePhotos.swift; sourceTree = "<group>"; };
 		33A109CC2BD0015600830066 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		33B392642BAA25A000E2DFE0 /* Quillify-1.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Quillify-1.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		33B392672BAA25A000E2DFE0 /* Quillify_1App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Quillify_1App.swift; sourceTree = "<group>"; };
@@ -51,10 +59,8 @@
 		33B3927A2BAA28F100E2DFE0 /* WelcomeState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeState.swift; sourceTree = "<group>"; };
 		33B3927C2BAA292600E2DFE0 /* WelcomeMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeMessageView.swift; sourceTree = "<group>"; };
 		33B3927F2BAA296800E2DFE0 /* PhotoPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPickerView.swift; sourceTree = "<group>"; };
-		33B392812BAA298100E2DFE0 /* LibraryPhotoPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryPhotoPicker.swift; sourceTree = "<group>"; };
 		33B392852BAA29B900E2DFE0 /* ToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolsView.swift; sourceTree = "<group>"; };
 		33B392872BAA29E800E2DFE0 /* WindowState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowState.swift; sourceTree = "<group>"; };
-		33B3928A2BAA2A3100E2DFE0 /* Canvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Canvas.swift; sourceTree = "<group>"; };
 		33B3928C2BAA2A7200E2DFE0 /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		33B3928E2BAA2AE100E2DFE0 /* CanvasDrawView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasDrawView.swift; sourceTree = "<group>"; };
 		33EA26172C03209200F61380 /* ToolsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolsViewModel.swift; sourceTree = "<group>"; };
@@ -75,8 +81,8 @@
 		332B7D9C2C03270300ED8F53 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				332B7DB72C033E7C00ED8F53 /* Image */,
 				332B7DA32C032DE600ED8F53 /* Content */,
-				33A109BF2BCFF84500830066 /* Camera */,
 				33B392772BAA28D200E2DFE0 /* Welcome */,
 				33B392892BAA2A1900E2DFE0 /* Canvas */,
 				33FD81422BD2D446003E517A /* Tools */,
@@ -90,6 +96,27 @@
 				33B392692BAA25A000E2DFE0 /* ContentView.swift */,
 			);
 			path = Content;
+			sourceTree = "<group>";
+		};
+		332B7DB02C033BD600ED8F53 /* Example */ = {
+			isa = PBXGroup;
+			children = (
+				332B7DAE2C033BC800ED8F53 /* ExamplePhotosNavigationView.swift */,
+				33A109C42BCFF8A900830066 /* ExamplePhotos.swift */,
+				332B7DB32C033C3900ED8F53 /* ExamplePhotosController.swift */,
+				332B7DB52C033C4D00ED8F53 /* ExamplePhotosView.swift */,
+			);
+			path = Example;
+			sourceTree = "<group>";
+		};
+		332B7DB72C033E7C00ED8F53 /* Image */ = {
+			isa = PBXGroup;
+			children = (
+				33B3927E2BAA295600E2DFE0 /* PhotoPicker */,
+				332B7DB02C033BD600ED8F53 /* Example */,
+				33A109BF2BCFF84500830066 /* Camera */,
+			);
+			path = Image;
 			sourceTree = "<group>";
 		};
 		33A109BF2BCFF84500830066 /* Camera */ = {
@@ -124,7 +151,6 @@
 			children = (
 				332B7D9C2C03270300ED8F53 /* Views */,
 				33FD81432BD2D45C003E517A /* States */,
-				33B3927E2BAA295600E2DFE0 /* PhotoPicker */,
 				33B392832BAA29A600E2DFE0 /* Essentials */,
 				33B392672BAA25A000E2DFE0 /* Quillify_1App.swift */,
 				33B3926B2BAA25A100E2DFE0 /* Assets.xcassets */,
@@ -148,8 +174,7 @@
 			isa = PBXGroup;
 			children = (
 				33B3927F2BAA296800E2DFE0 /* PhotoPickerView.swift */,
-				33B392812BAA298100E2DFE0 /* LibraryPhotoPicker.swift */,
-				33A109C42BCFF8A900830066 /* Example.swift */,
+				332B7DB12C033BF200ED8F53 /* LibraryPhotoPickerView.swift */,
 			);
 			path = PhotoPicker;
 			sourceTree = "<group>";
@@ -169,7 +194,7 @@
 			children = (
 				33B3928C2BAA2A7200E2DFE0 /* CanvasView.swift */,
 				33B3928E2BAA2AE100E2DFE0 /* CanvasDrawView.swift */,
-				33B3928A2BAA2A3100E2DFE0 /* Canvas.swift */,
+				332B7DA82C0338CE00ED8F53 /* Canvas.swift */,
 			);
 			path = Canvas;
 			sourceTree = "<group>";
@@ -262,18 +287,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				332B7DAF2C033BC800ED8F53 /* ExamplePhotosNavigationView.swift in Sources */,
 				33B3926A2BAA25A000E2DFE0 /* ContentView.swift in Sources */,
 				332B7D9E2C03289B00ED8F53 /* WelcomeViewModel.swift in Sources */,
-				33B392822BAA298100E2DFE0 /* LibraryPhotoPicker.swift in Sources */,
 				33B392802BAA296800E2DFE0 /* PhotoPickerView.swift in Sources */,
+				332B7DB42C033C3900ED8F53 /* ExamplePhotosController.swift in Sources */,
 				332B7DA02C032A4C00ED8F53 /* CameraScanViewModel.swift in Sources */,
-				33B3928B2BAA2A3100E2DFE0 /* Canvas.swift in Sources */,
 				33A109BE2BCFF7AC00830066 /* Algorithm.swift in Sources */,
+				332B7DB22C033BF200ED8F53 /* LibraryPhotoPickerView.swift in Sources */,
 				33B392792BAA28DF00E2DFE0 /* WelcomeView.swift in Sources */,
 				33B3927B2BAA28F100E2DFE0 /* WelcomeState.swift in Sources */,
 				33B3927D2BAA292600E2DFE0 /* WelcomeMessageView.swift in Sources */,
-				33A109C52BCFF8A900830066 /* Example.swift in Sources */,
+				33A109C52BCFF8A900830066 /* ExamplePhotos.swift in Sources */,
 				33B392862BAA29B900E2DFE0 /* ToolsView.swift in Sources */,
+				332B7DB62C033C4D00ED8F53 /* ExamplePhotosView.swift in Sources */,
+				332B7DA92C0338CE00ED8F53 /* Canvas.swift in Sources */,
 				33A109C12BCFF85900830066 /* CameraScan.swift in Sources */,
 				332B7DA22C032DD700ED8F53 /* WelcomeOverlay.swift in Sources */,
 				33EA26182C03209200F61380 /* ToolsViewModel.swift in Sources */,

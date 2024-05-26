@@ -12,7 +12,7 @@ struct WelcomeMessageView: View {
             VStack {
                 Spacer()
 
-                Image("Icon")
+                Image("AppIcon")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(maxWidth: 200, maxHeight: 200)

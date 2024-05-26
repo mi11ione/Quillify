@@ -35,6 +35,7 @@
 		334745982C03449C005D57FA /* QuillifyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334745772C0343C4005D57FA /* QuillifyApp.swift */; };
 		339BE9222C03642B0074FC47 /* ImageRenderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339BE9212C03642B0074FC47 /* ImageRenderView.swift */; };
 		339BE9242C03656E0074FC47 /* ImageConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339BE9232C03656E0074FC47 /* ImageConversion.swift */; };
+		33ADCCAB2C039FB900CA09EC /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 33ADCCAA2C039FB900CA09EC /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -69,6 +70,7 @@
 		334745792C0343C4005D57FA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		339BE9212C03642B0074FC47 /* ImageRenderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageRenderView.swift; sourceTree = "<group>"; };
 		339BE9232C03656E0074FC47 /* ImageConversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageConversion.swift; sourceTree = "<group>"; };
+		33ADCCAA2C039FB900CA09EC /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +88,7 @@
 			isa = PBXGroup;
 			children = (
 				334745792C0343C4005D57FA /* Info.plist */,
+				33ADCCAA2C039FB900CA09EC /* README.md */,
 				334745782C0343C4005D57FA /* Quillify */,
 				334745412C0342F5005D57FA /* Products */,
 			);
@@ -281,6 +284,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				33ADCCAB2C039FB900CA09EC /* README.md in Resources */,
 				334745922C0343C4005D57FA /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

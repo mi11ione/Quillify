@@ -63,7 +63,7 @@ struct CanvasDrawView: View {
                         HStack {
                             Spacer()
                             if windowState.currentTool != .placePhoto {
-                                if !hasSelection {
+                                if (!hasSelection) {
                                     controls()
                                 }
                                 Button(action: { selectionAction() }) {
@@ -103,14 +103,13 @@ struct CanvasDrawView: View {
                                     .cornerRadius(.greatestFiniteMagnitude)
                             }
                         } else {
-                            Text("Конвертируем")
-                                .foregroundColor(.accentColor)
-                                .font(.headline)
-                                .bold()
+                            ProgressView()
+                                .padding(.horizontal, 70)
                                 .padding()
                                 .background(
-                                    Rectangle().fill(Color(uiColor: UIColor.systemGray6))
-                                        .blur(radius: 10)
+                                    RoundedRectangle(cornerRadius: 50)
+                                        .fill(Color.white)
+                                        .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 5)
                                 )
                         }
                     }

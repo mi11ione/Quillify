@@ -19,7 +19,7 @@ struct WelcomeView: View {
                     WelcomeMessageView()
                         .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading).combined(with: .opacity)))
                 case .learnTools:
-                    LearnToolsView()
+                    ToolsView()
                         .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading).combined(with: .opacity)))
                 case .selectPhoto:
                     PhotoPickerView(windowState: windowState)

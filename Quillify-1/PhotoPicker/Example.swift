@@ -1,6 +1,6 @@
 //
 //  Example.swift
-//  Quillify-1
+//  Quillify
 //
 //  Created by mi11ion on 17/4/24.
 //

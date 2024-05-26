@@ -27,6 +27,7 @@
 		33B3928B2BAA2A3100E2DFE0 /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B3928A2BAA2A3100E2DFE0 /* Canvas.swift */; };
 		33B3928D2BAA2A7200E2DFE0 /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B3928C2BAA2A7200E2DFE0 /* CanvasView.swift */; };
 		33B3928F2BAA2AE100E2DFE0 /* CanvasDrawView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B3928E2BAA2AE100E2DFE0 /* CanvasDrawView.swift */; };
+		33EA26182C03209200F61380 /* ToolsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33EA26172C03209200F61380 /* ToolsViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +53,7 @@
 		33B3928A2BAA2A3100E2DFE0 /* Canvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Canvas.swift; sourceTree = "<group>"; };
 		33B3928C2BAA2A7200E2DFE0 /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		33B3928E2BAA2AE100E2DFE0 /* CanvasDrawView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasDrawView.swift; sourceTree = "<group>"; };
+		33EA26172C03209200F61380 /* ToolsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolsViewModel.swift; sourceTree = "<group>"; };
 		33FD81462BD2D548003E517A /* Quillify_1.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Quillify_1.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -178,6 +180,7 @@
 			isa = PBXGroup;
 			children = (
 				33B392852BAA29B900E2DFE0 /* ToolsView.swift */,
+				33EA26172C03209200F61380 /* ToolsViewModel.swift */,
 			);
 			path = Tools;
 			sourceTree = "<group>";
@@ -219,7 +222,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1530;
-				LastUpgradeCheck = 1530;
+				LastUpgradeCheck = 1540;
 				TargetAttributes = {
 					33B392632BAA25A000E2DFE0 = {
 						CreatedOnToolsVersion = 15.3;
@@ -273,6 +276,7 @@
 				33A109C52BCFF8A900830066 /* Example.swift in Sources */,
 				33B392862BAA29B900E2DFE0 /* ToolsView.swift in Sources */,
 				33A109C12BCFF85900830066 /* CameraScan.swift in Sources */,
+				33EA26182C03209200F61380 /* ToolsViewModel.swift in Sources */,
 				33A109BC2BCFF71200830066 /* Shaders.metal in Sources */,
 				33B3928F2BAA2AE100E2DFE0 /* CanvasDrawView.swift in Sources */,
 				33B3928D2BAA2A7200E2DFE0 /* CanvasView.swift in Sources */,
@@ -291,6 +295,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -320,6 +325,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -353,6 +359,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -382,6 +389,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -410,6 +418,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Quillify-1/Quillify_1.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Quillify-1/Preview Content\"";
 				DEVELOPMENT_TEAM = ZZWB6X2U7F;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -452,6 +461,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Quillify-1/Quillify_1.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Quillify-1/Preview Content\"";
 				DEVELOPMENT_TEAM = ZZWB6X2U7F;
 				ENABLE_HARDENED_RUNTIME = YES;

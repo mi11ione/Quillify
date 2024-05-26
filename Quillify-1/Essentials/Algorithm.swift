@@ -15,13 +15,6 @@ private struct Point: Hashable {
     let x, y: Int
 }
 
-/// Converts an image to paths for vector drawing using the process outlined by the paper
-/// "A complete hand-drawn sketch vectorization framework" by L. Donati, S. Cesano, and A. Prati.
-/// Applies a kernel to the image to find the similarity of each pixel region with a 2D gaussian distribution. The distribution
-/// estimates how a pen stroke appears on the background. Next, convert the image to a binary representation
-/// signifying whether any pixel is part of a stroke. Then find the continuous strokes using depth first search on the white pixels.
-/// Find the border of these strokes and erode them while maintaining a continuous path.
-/// When the path is a center line, separate branching points in the path into separate strokes.
 class ImagePathConverter {
     struct Pixel {
         let x, y: Int
@@ -29,37 +22,33 @@ class ImagePathConverter {
     }
 
     let image: UIImage
-
-    // All continuous stroke pixels separated into groups
-    private lazy var groupedConnectedPixels: [Set<Point>] = {
-        let groups = try? self.findGroupedConnectedPixels()
-        return groups ?? []
-    }()
-
-    // The center line representation of each continuous stroke pixel group.
-    // Each is a path of pixels with width 1.
-    private lazy var centerLines: [Set<Point>] = self.findCenterLines()
-
-    private lazy var rgbaPixelData: [UInt8]? = image.rgbaPixelData()
+    private var rgbaPixelData: [UInt8]?
 
     init(image: UIImage) {
         self.image = image
+        self.rgbaPixelData = image.rgbaPixelData()
     }
 
-    /// Converts the provided image to paths with each path's average color
+    private lazy var groupedConnectedPixels: [Set<Point>] = {
+        do {
+            return try self.findGroupedConnectedPixels()
+        } catch {
+            return []
+        }
+    }()
+
+    private lazy var centerLines: [Set<Point>] = self.findCenterLines()
+
     public func findPaths() -> [([CGPoint], UIColor)] {
         var brightness: CGFloat = 0
         (image.cgImage?.averageColor ?? .white).getHue(nil, saturation: nil, brightness: &brightness, alpha: nil)
         let averageBrightness = Float(brightness)
         let centerLinePaths = findCenterLinePaths()
-        // Paths converted to bezier curves by least squares
         var pathColors = [[([CGPoint], UIColor)]](repeating: [], count: centerLinePaths.count)
 
         DispatchQueue.concurrentPerform(iterations: centerLinePaths.count) { index in
             let path = centerLinePaths[index]
             let color: UIColor = averageColor(path: path)
-
-            // For simplicity use the point data as cubic b-spline control points
             let pointData = path.map { CGPoint(x: CGFloat($0.x), y: CGFloat($0.y)) }
             let newColor = averageBrightness > 0.5 ? color : SemanticColor.invertedBrightnessColor(color: color)
             pathColors[index] = [(pointData, newColor)]
@@ -68,76 +57,73 @@ class ImagePathConverter {
         return pathColors.flatMap { $0 }
     }
 
-    // Get the pixel data at this point in the original image
     private func pixelAtPoint(_ p: Point) -> Pixel? {
         let imageIndex: Int = (p.y * Int(image.size.width)) + p.x
-        guard let pixelData = rgbaPixelData, imageIndex >= 0, imageIndex < Int(image.size.width * image.size.height) else {
+        guard let pixelData = rgbaPixelData, imageIndex >= 0, imageIndex < pixelData.count / 4 else {
             return nil
         }
-        let r = pixelData[imageIndex * 4]
-        let g = pixelData[imageIndex * 4 + 1]
-        let b = pixelData[imageIndex * 4 + 2]
-        let a = pixelData[imageIndex * 4 + 3]
-        return Pixel(x: p.x, y: p.y, r: r, g: g, b: b, a: a)
+        return Pixel(
+            x: p.x, y: p.y,
+            r: pixelData[imageIndex * 4],
+            g: pixelData[imageIndex * 4 + 1],
+            b: pixelData[imageIndex * 4 + 2],
+            a: pixelData[imageIndex * 4 + 3]
+        )
     }
 
     private func findGroupedConnectedPixels() throws -> [Set<Point>] {
-        // Use covariance path detection kernel to find lines in the image
         guard let cgImage = image.cgImage else { return [] }
         let covarianceFilter = try PathDetectionKernel(cgImage: cgImage)
         let outputImage = try covarianceFilter.applyKernel()
-
-        // Find the position of all of the white pixels
         let size = image.size
         guard let outputData = UIImage(cgImage: outputImage).rgbaPixelData() else { return [] }
+
         let numPixels = Int(size.width) * Int(size.height)
         var growingStrokePixelArray = [Point]()
-        // Since we are doing this operation in parallel, access to the stroke pixel array
-        // must be limited to one thread at a time
-        let semaphore = DispatchSemaphore(value: 1)
+        let concurrentQueue = DispatchQueue(label: "com.quillify.growingStrokePixelArray", attributes: .concurrent)
+        let dispatchGroup = DispatchGroup()
+
         DispatchQueue.concurrentPerform(iterations: numPixels) { index in
             let startIndex = index * 4
-            let r = outputData[startIndex]
-
-            // Check if the pixel is white
-            guard r > 100 else { return }
-
+            guard outputData[startIndex] > 100 else { return }
             let x = index % Int(self.image.size.width)
             let y = index / Int(self.image.size.width)
-            semaphore.wait()
-            growingStrokePixelArray.append(Point(x: x, y: y))
-            semaphore.signal()
+            let point = Point(x: x, y: y)
+            
+            dispatchGroup.enter()
+            concurrentQueue.async(flags: .barrier) {
+                growingStrokePixelArray.append(point)
+                dispatchGroup.leave()
+            }
         }
+
+        dispatchGroup.wait()
 
         let strokePixels = growingStrokePixelArray
         let strokesSet = Set<Point>(strokePixels)
-
-        // Iterate through points to separate into connected stroke components
-        // with depth first search
         var groups = [Set<Point>]()
         var visited = Set<Point>()
+
         for point in strokePixels {
             guard !visited.contains(point) else { continue }
             var stroke = Set<Point>()
-            stroke.insert(point)
             var searchPoints = [point]
+            stroke.insert(point)
+
             while !searchPoints.isEmpty {
                 guard let searchPoint = searchPoints.popLast() else { break }
-                // Neighboring pixels we're interested in
-                let up = Point(x: searchPoint.x, y: searchPoint.y - 1)
-                let left = Point(x: searchPoint.x - 1, y: searchPoint.y)
-                let right = Point(x: searchPoint.x + 1, y: searchPoint.y)
-                let down = Point(x: searchPoint.x, y: searchPoint.y + 1)
-                let newPoints = [up, left, right, down].filter { neighbor in
-                    strokesSet.contains(neighbor) && !visited.contains(neighbor)
-                }
-                searchPoints.append(contentsOf: newPoints)
+                let neighbors = [Point(x: searchPoint.x, y: searchPoint.y - 1),
+                                 Point(x: searchPoint.x - 1, y: searchPoint.y),
+                                 Point(x: searchPoint.x + 1, y: searchPoint.y),
+                                 Point(x: searchPoint.x, y: searchPoint.y + 1)].filter {
+                                    strokesSet.contains($0) && !visited.contains($0)
+                                 }
+                searchPoints.append(contentsOf: neighbors)
                 stroke.insert(searchPoint)
                 visited.insert(searchPoint)
             }
             groups.append(stroke)
         }
-
         return groups
     }
 
@@ -147,95 +133,74 @@ class ImagePathConverter {
             let group = groupedConnectedPixels[index]
             var boundaries = Set<Point>()
             for point in group {
-                let up = Point(x: point.x, y: point.y - 1)
-                let left = Point(x: point.x - 1, y: point.y)
-                let right = Point(x: point.x + 1, y: point.y)
-                let down = Point(x: point.x, y: point.y + 1)
-                // if any direct neighbors are not in the group, this is a boundary pixel
-                if [up, left, right, down].contains(where: { !group.contains($0) }) {
+                if [Point(x: point.x, y: point.y - 1),
+                    Point(x: point.x - 1, y: point.y),
+                    Point(x: point.x + 1, y: point.y),
+                    Point(x: point.x, y: point.y + 1)].contains(where: { !group.contains($0) }) {
                     boundaries.insert(point)
                 }
             }
             var updatedBoundaries = boundaries
             var updatedGroup = group
             var didChange = true
+
             while didChange {
                 didChange = false
-                let currentBoundaries = updatedBoundaries
-                for boundary in currentBoundaries {
-                    guard updatedBoundaries.contains(boundary) else { continue }
-                    if !Connectivity.instance.isRequiredForConnectivity(point: boundary, group: updatedGroup) {
-                        didChange = true
+                for boundary in updatedBoundaries {
+                    guard updatedBoundaries.contains(boundary),
+                          !Connectivity.instance.isRequiredForConnectivity(point: boundary, group: updatedGroup) else { continue }
 
-                        let up = Point(x: boundary.x, y: boundary.y - 1)
-                        let left = Point(x: boundary.x - 1, y: boundary.y)
-                        let right = Point(x: boundary.x + 1, y: boundary.y)
-                        let down = Point(x: boundary.x, y: boundary.y + 1)
-                        let topLeft = Point(x: boundary.x - 1, y: boundary.y - 1)
-                        let topRight = Point(x: boundary.x + 1, y: boundary.y - 1)
-                        let downLeft = Point(x: boundary.x - 1, y: boundary.y + 1)
-                        let downRight = Point(x: boundary.x + 1, y: boundary.y + 1)
-
-                        for neighbor in [up, left, right, down, topLeft, topRight, downLeft, downRight] {
-                            if updatedGroup.contains(neighbor) {
-                                updatedBoundaries.insert(neighbor)
-                            }
+                    [Point(x: boundary.x, y: boundary.y - 1),
+                     Point(x: boundary.x - 1, y: boundary.y),
+                     Point(x: boundary.x + 1, y: boundary.y),
+                     Point(x: boundary.x, y: boundary.y + 1),
+                     Point(x: boundary.x - 1, y: boundary.y - 1),
+                     Point(x: boundary.x + 1, y: boundary.y - 1),
+                     Point(x: boundary.x - 1, y: boundary.y + 1),
+                     Point(x: boundary.x + 1, y: boundary.y + 1)].forEach {
+                        if updatedGroup.contains($0) {
+                            updatedBoundaries.insert($0)
                         }
-                        updatedBoundaries.remove(boundary)
-                        updatedGroup.remove(boundary)
                     }
+                    updatedBoundaries.remove(boundary)
+                    updatedGroup.remove(boundary)
+                    didChange = true
                 }
             }
-
             centerLines[index] = updatedGroup
         }
-
         return centerLines
     }
 
     private func findCenterLinePaths() -> [[Point]] {
-        // Allow an arbitrary number of paths to be generated from each center line
         var paths = [[[Point]]](repeating: [], count: centerLines.count)
         DispatchQueue.concurrentPerform(iterations: centerLines.count) { index in
             let centerLineSet = centerLines[index]
-            guard let initialPoint = centerLineSet.min(by: { lhs, rhs in
-                lhs.x + lhs.y < rhs.x + rhs.y
-            }) else { return }
-
-            // Breadth first search for the end of the path,
-            // we're finding the nearest end of the line
+            guard let initialPoint = centerLineSet.min(by: { $0.x + $0.y < $1.x + $1.y }) else { return }
             let deque = Deque<Point>()
             let findNeighbors: (Point) -> [Point] = { point in
-                let up = Point(x: point.x, y: point.y - 1)
-                let left = Point(x: point.x - 1, y: point.y)
-                let right = Point(x: point.x + 1, y: point.y)
-                let down = Point(x: point.x, y: point.y + 1)
-                let topLeft = Point(x: point.x - 1, y: point.y - 1)
-                let topRight = Point(x: point.x + 1, y: point.y - 1)
-                let bottomLeft = Point(x: point.x - 1, y: point.y + 1)
-                let bottomRight = Point(x: point.x + 1, y: point.y + 1)
-
-                return [up, left, right, down, topLeft, topRight, bottomLeft, bottomRight].filter { neighbor in
-                    centerLineSet.contains(neighbor)
-                }
+                return [Point(x: point.x, y: point.y - 1),
+                        Point(x: point.x - 1, y: point.y),
+                        Point(x: point.x + 1, y: point.y),
+                        Point(x: point.x, y: point.y + 1),
+                        Point(x: point.x - 1, y: point.y - 1),
+                        Point(x: point.x + 1, y: point.y - 1),
+                        Point(x: point.x - 1, y: point.y + 1),
+                        Point(x: point.x + 1, y: point.y + 1)].filter { centerLineSet.contains($0) }
             }
-
             deque.addAtTail(initialPoint)
             var breadthVisited = Set<Point>()
             breadthVisited.insert(initialPoint)
-
             guard var currentPoint = deque.popFirst() else { return }
+
             while !Connectivity.instance.isEdge(point: currentPoint, group: centerLineSet) {
                 let neighbors = findNeighbors(currentPoint).filter { !breadthVisited.contains($0) }
-                for neighbor in neighbors {
-                    deque.addAtTail(neighbor)
-                }
+                neighbors.forEach { deque.addAtTail($0) }
                 guard let nextPoint = deque.popFirst() else { break }
                 currentPoint = nextPoint
                 breadthVisited.insert(nextPoint)
             }
-            // We found the starting point!
-            // Now we have to search for paths from this point
+
             let startingPoint = currentPoint
             var depthVisited = Set<Point>()
             var stack: [Point] = []
@@ -243,12 +208,11 @@ class ImagePathConverter {
             var currentPath: [Point] = [startingPoint]
             var centerLinePaths = [[Point]]()
 
-            // Break paths into strokes
             while true {
                 let neighbors = findNeighbors(currentDepth)
                 stack.append(contentsOf: neighbors.filter { !depthVisited.contains($0) })
                 guard let nextPoint = stack.popLast() else { break }
-                // If there are more than two neighbors, we must split into two separate paths to have both paths be lines
+
                 if neighbors.contains(nextPoint), neighbors.count < 3 {
                     currentPath.append(nextPoint)
                     currentDepth = nextPoint
@@ -268,40 +232,28 @@ class ImagePathConverter {
 
     private func averageColor(path: [Point]) -> UIColor {
         let numSamplePoints = min(10, path.count)
-        var sampleIndices = [Int]()
-        // Select random sample points along the center line path
-        for _ in 0 ..< numSamplePoints {
-            let randomIndex = Int.random(in: 0 ..< path.count)
-            sampleIndices.append(randomIndex)
-        }
-        // Use the image data to get the color at each point
+        let sampleIndices = (0..<numSamplePoints).map { _ in Int.random(in: 0..<path.count) }
         let sampleColors = sampleIndices.compactMap { index -> (r: CGFloat, g: CGFloat, b: CGFloat)? in
             let samplePoint = path[index]
             guard let pixel = pixelAtPoint(samplePoint) else { return nil }
             return (CGFloat(pixel.r) / 255.0, CGFloat(pixel.g) / 255.0, CGFloat(pixel.b) / 255.0)
         }
-        // Add all of the sample colors
-        let sumColors = sampleColors.reduce(into: (r: 0.0, g: 0.0, b: 0.0)) { colorSum, color in
-            colorSum = (colorSum.r + color.r, colorSum.g + color.g, colorSum.b + color.b)
+        let sumColors = sampleColors.reduce((r: 0.0, g: 0.0, b: 0.0)) { colorSum, color in
+            return (colorSum.r + color.r, colorSum.g + color.g, colorSum.b + color.b)
         }
-        // Find the average color
-        let averageColor = UIColor(red: sumColors.r / CGFloat(numSamplePoints), green: sumColors.g / CGFloat(numSamplePoints), blue: sumColors.b / CGFloat(numSamplePoints), alpha: 1.0)
-        return averageColor
+        return UIColor(
+            red: sumColors.r / CGFloat(numSamplePoints),
+            green: sumColors.g / CGFloat(numSamplePoints),
+            blue: sumColors.b / CGFloat(numSamplePoints),
+            alpha: 1.0
+        )
     }
 }
 
 private class Connectivity {
-    // We create a singleton so the matrices only have to be computed once
     static let instance = Connectivity()
     private let queue = DispatchQueue(label: "connectivity", qos: .userInitiated, autoreleaseFrequency: .workItem, target: nil)
 
-    // These matrices are compared to a point's neighbors matrix. If any of these
-    // matrices match the neighbors matrix, that point is an edge pixel of a path.
-    //
-    // Reading matrix values:
-    // -1 means that there must not be a path pixel there.
-    // 1 means that there must be a path pixel there.
-    // 0 indicates that it does not matter if there is a path pixel there.
     private lazy var _edgeMasks: [simd_float3x3] = {
         let lastHorizontal: simd_float3x3 = {
             let col0 = simd_float3(-1, -1, -1)
@@ -309,15 +261,11 @@ private class Connectivity {
             let col2 = simd_float3(-1, -1, -1)
             return simd_float3x3(col0, col1, col2)
         }()
-
         return fourRotations(matrix: lastHorizontal)
     }()
 
     private var edgeMasks: [simd_float3x3] {
-        // Prevent the variable from being accessed from a different thread before it's initialized
-        queue.sync {
-            _edgeMasks
-        }
+        queue.sync { _edgeMasks }
     }
 
     private func fourRotations(matrix: simd_float3x3) -> [simd_float3x3] {
@@ -328,7 +276,6 @@ private class Connectivity {
             let newCol2 = simd_float3(col0.x, col1.x, col2.x)
             return simd_float3x3(newCol0, newCol1, newCol2)
         }
-
         let rot0 = matrix
         let rot1 = rotateMatrix(matrix: matrix)
         let rot2 = rotateMatrix(matrix: rot1)
@@ -336,14 +283,6 @@ private class Connectivity {
         return [rot0, rot1, rot2, rot3]
     }
 
-    // These matrices are compared to a point's neighbors matrix. If any of these
-    // matrices match the neighbors matrix, that point is required to maintain path
-    // connectivity.
-    //
-    // Reading matrix values:
-    // -1 means that there must not be a path pixel there.
-    // 1 means that there must be a path pixel there.
-    // 0 indicates that it does not matter if there is a path pixel there.
     private lazy var _hitMissMasks: [simd_float3x3] = {
         var masks = [simd_float3x3]()
 
@@ -416,59 +355,47 @@ private class Connectivity {
     }()
 
     private var hitMissMasks: [simd_float3x3] {
-        // Prevent the variable from being accessed from a different thread before it's initialized
-        queue.sync {
-            _hitMissMasks
-        }
+        queue.sync { _hitMissMasks }
     }
 
     private func isRequired(point: Point, group: Set<Point>) -> (simd_float3x3) -> Bool {
-        let up = Point(x: point.x, y: point.y - 1)
-        let left = Point(x: point.x - 1, y: point.y)
-        let right = Point(x: point.x + 1, y: point.y)
-        let down = Point(x: point.x, y: point.y + 1)
-        let topLeft = Point(x: point.x - 1, y: point.y - 1)
-        let topRight = Point(x: point.x + 1, y: point.y - 1)
-        let bottomLeft = Point(x: point.x - 1, y: point.y + 1)
-        let bottomRight = Point(x: point.x + 1, y: point.y + 1)
+        let neighbors = [
+            Point(x: point.x - 1, y: point.y - 1), Point(x: point.x, y: point.y - 1), Point(x: point.x + 1, y: point.y - 1),
+            Point(x: point.x - 1, y: point.y),     Point(x: point.x, y: point.y),     Point(x: point.x + 1, y: point.y),
+            Point(x: point.x - 1, y: point.y + 1), Point(x: point.x, y: point.y + 1), Point(x: point.x + 1, y: point.y + 1)
+        ].map { group.contains($0) ? Float(1) : Float(-1) }
 
-        let col0 = [topLeft, left, bottomLeft].map { group.contains($0) }.map { $0 ? Float(1) : Float(-1) }
-        let simdCol0 = SIMD3<Float>(col0)
-        let col1 = [up, point, down].map { group.contains($0) }.map { $0 ? Float(1) : Float(-1) }
-        let simdCol1 = SIMD3<Float>(col1)
-        let col2 = [topRight, right, bottomRight].map { group.contains($0) }.map { $0 ? Float(1) : Float(-1) }
-        let simdCol2 = SIMD3<Float>(col2)
+        let matrix = simd_float3x3(rows: [
+            SIMD3<Float>(neighbors[0], neighbors[1], neighbors[2]),
+            SIMD3<Float>(neighbors[3], neighbors[4], neighbors[5]),
+            SIMD3<Float>(neighbors[6], neighbors[7], neighbors[8])
+        ])
 
-        // Compares a given matrix to the 3x3 grid of pixels surrounding a point
-        let isRequired: (simd_float3x3) -> Bool = { matrix in
-            let columns = [simdCol0, simdCol1, simdCol2]
-            let matrixColumns = [matrix.columns.0, matrix.columns.1, matrix.columns.2]
-            let multipliedColumns = zip(matrixColumns, columns).map { matrixColumn, column in
-                matrixColumn * column
-            }
-            let absoluteValue = [matrix.columns.0, matrix.columns.1, matrix.columns.2].map { matrixColumn in
-                simd_abs(matrixColumn)
-            }
-            // If these matrices have the same values at -1, 1 in the mask, their direct
-            // element product should be equal to the absolute value of the mask
-            return simd_float3x3(multipliedColumns) == simd_float3x3(absoluteValue)
+        return { mask in
+            let multipliedColumns = simd_float3x3(
+                mask.columns.0 * matrix.columns.0,
+                mask.columns.1 * matrix.columns.1,
+                mask.columns.2 * matrix.columns.2
+            )
+            let absoluteMask = simd_float3x3(
+                simd_abs(mask.columns.0),
+                simd_abs(mask.columns.1),
+                simd_abs(mask.columns.2)
+            )
+            return multipliedColumns == absoluteMask
         }
-        return isRequired
     }
 
     func isEdge(point: Point, group: Set<Point>) -> Bool {
-        let isRequired = isRequired(point: point, group: group)
-        return edgeMasks.contains { isRequired($0) }
+        return edgeMasks.contains(where: isRequired(point: point, group: group))
     }
 
     func isRequiredForConnectivity(point: Point, group: Set<Point>) -> Bool {
-        let isRequired = isRequired(point: point, group: group)
-        return hitMissMasks.contains { isRequired($0) }
+        return hitMissMasks.contains(where: isRequired(point: point, group: group))
     }
 }
 
 private extension UIImage {
-    // Use core graphics to quickly fill an array with pixel data the cpu can access
     func rgbaPixelData() -> [UInt8]? {
         let size = size
         var pixelData = [UInt8](repeating: 0, count: Int(size.width * size.height * 4))
@@ -494,7 +421,6 @@ private class TextureManager {
         textureLoader = MTKTextureLoader(device: device)
     }
 
-    /// Create a texture from an image
     func texture(cgImage: CGImage, usage: MTLTextureUsage = [.shaderRead, .shaderWrite]) throws -> MTLTexture {
         let options: [MTKTextureLoader.Option: Any] = [
             .textureUsage: NSNumber(value: usage.rawValue),
@@ -504,9 +430,8 @@ private class TextureManager {
         return try textureLoader.newTexture(cgImage: cgImage, options: options)
     }
 
-    /// Get an image from the given texture
     func cgImage(texture: MTLTexture) throws -> CGImage {
-        let bytesPerRow = texture.width * 4 // r,g,b,a
+        let bytesPerRow = texture.width * 4
         let bytesLength = bytesPerRow * texture.height
         let rgbaBytes = UnsafeMutableRawPointer.allocate(byteCount: bytesLength, alignment: MemoryLayout<UInt8>.alignment)
         defer { rgbaBytes.deallocate() }
@@ -527,7 +452,6 @@ private class TextureManager {
         return cgImage
     }
 
-    /// Create a texture with the same width and height
     func createMatchingTexture(texture: MTLTexture) throws -> MTLTexture {
         let descriptor = MTLTextureDescriptor()
         descriptor.width = texture.width
@@ -541,7 +465,6 @@ private class TextureManager {
     }
 }
 
-/// Outputs a binary image of the pixels that are have a high probability of being a part of a parth
 private final class PathDetectionKernel {
     private let library: MTLLibrary
     private let textureManager: TextureManager
@@ -561,11 +484,9 @@ private final class PathDetectionKernel {
         var brightness: CGFloat = 0
         (cgImage.averageColor ?? .white).getHue(nil, saturation: nil, brightness: &brightness, alpha: nil)
         averageBrightness = Float(brightness)
-        guard let commandQueue = library.device.makeCommandQueue() else {
-            throw MetalErrors.commandQueueCreationFailed
-        }
+        guard let commandQueue = library.device.makeCommandQueue() else { throw MetalErrors.commandQueueCreationFailed }
         self.commandQueue = commandQueue
-        deviceSupportsNonuniformThreadgroups = library.device.supportsFeatureSet(.iOS_GPUFamily4_v1)
+        deviceSupportsNonuniformThreadgroups = library.device.supportsFamily(.apple5)
         let constantValues = MTLFunctionConstantValues()
 
         constantValues.setConstantValue(&deviceSupportsNonuniformThreadgroups, type: .bool, index: 0)
@@ -600,8 +521,6 @@ private final class PathDetectionKernel {
             encoder.dispatchThreadgroups(threadGroupCount,
                                          threadsPerThreadgroup: threadGroupSize)
         }
-
-        encoder.setComputePipelineState(pipelineState)
         encoder.endEncoding()
     }
 
@@ -611,111 +530,74 @@ private final class PathDetectionKernel {
 
         for size in sizes {
             self.size = size
-            guard let commandBuffer = commandQueue.makeCommandBuffer() else {
-                throw MetalErrors.commandBufferCreationFailed
-            }
+            guard let commandBuffer = commandQueue.makeCommandBuffer() else { throw MetalErrors.commandBufferCreationFailed }
             encode(source: imageTexture, destination: outputTexture, in: commandBuffer)
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()
-            let image = try textureManager.cgImage(texture: outputTexture)
-            kernelImages.append(image)
+            kernelImages.append(try textureManager.cgImage(texture: outputTexture))
         }
 
-        // Combine kernel images
-        guard let combinedImage = kernelImages.reduce(into: CGImage?.none, { lastImage, nextImage in
-            guard let previousImage = lastImage else {
-                lastImage = nextImage
-                return
-            }
-            guard let combiner = try? CombineImageKernel(cgImageOne: previousImage, cgImageTwo: nextImage, library: library, textureManager: textureManager) else { return }
-            if let newImage = try? combiner.applyKernel() {
-                lastImage = newImage
-            }
-        }) else {
-            throw MetalErrors.kernelFailed
-        }
+        guard let combinedImage = kernelImages.reduce(nil as CGImage?, { lastImage, nextImage in
+            guard let previousImage = lastImage else { return nextImage }
+            guard let combiner = try? CombineImageKernel(cgImageOne: previousImage, cgImageTwo: nextImage, library: library, textureManager: textureManager) else { return nil }
+            return try? combiner.applyKernel()
+        }) else { throw MetalErrors.kernelFailed }
 
-        // Make the image pixels either black or white depending on their line confidence
         let binaryFilter = try BinaryImageKernel(cgImage: combinedImage, library: library, textureManager: textureManager)
-
         let binaryImage = try binaryFilter.getBinaryImage()
-
-        // Remove pixels that do not vary enough from the average color or their surrounding pixels
         let originalImage = try textureManager.cgImage(texture: imageTexture)
 
         let averageBrightnessFilter = try FilterNearAverageKernel(cgImageOne: originalImage, cgImageTwo: binaryImage, averageBrightness: averageBrightness, library: library, textureManager: textureManager)
-
         let filteredImage = try averageBrightnessFilter.applyKernel()
 
-        // Add pixels that are near white pixels and do vary enough from the average color or their surrounding pixels
         let addMissingPixels = try RecoverMissingPixelsKernel(cgImageOne: originalImage, cgImageTwo: filteredImage, averageBrightness: averageBrightness, library: library, textureManager: textureManager)
-
-        let recoveredImage = try addMissingPixels.applyKernel()
-
-        return recoveredImage
+        return try addMissingPixels.applyKernel()
     }
 
-    /// Combine two covariance kernel images to output whichever line probability is more confident for every pixel.
     final class CombineImageKernel {
         private let textureManager: TextureManager
         private let inputTextureOne: MTLTexture
         private let inputTextureTwo: MTLTexture
         private let outputTexture: MTLTexture
-
         private var commandQueue: MTLCommandQueue
         private let pipelineState: MTLComputePipelineState
         private var deviceSupportsNonuniformThreadgroups: Bool
 
         init(cgImageOne: CGImage, cgImageTwo: CGImage, library: MTLLibrary, textureManager: TextureManager) throws {
-            guard let commandQueue = library.device.makeCommandQueue() else {
-                throw MetalErrors.commandQueueCreationFailed
-            }
+            guard let commandQueue = library.device.makeCommandQueue() else { throw MetalErrors.commandQueueCreationFailed }
             self.commandQueue = commandQueue
-            deviceSupportsNonuniformThreadgroups = library.device.supportsFeatureSet(.iOS_GPUFamily4_v1)
+            deviceSupportsNonuniformThreadgroups = library.device.supportsFamily(.apple5)
             let constantValues = MTLFunctionConstantValues()
-
             constantValues.setConstantValue(&deviceSupportsNonuniformThreadgroups, type: .bool, index: 0)
             let function = try library.makeFunction(name: "combine_confidence", constantValues: constantValues)
             pipelineState = try library.device.makeComputePipelineState(function: function)
             self.textureManager = textureManager
-            let inputTextureOne = try textureManager.texture(cgImage: cgImageOne)
-            let inputTextureTwo = try textureManager.texture(cgImage: cgImageTwo)
-            self.inputTextureOne = inputTextureOne
-            self.inputTextureTwo = inputTextureTwo
+            inputTextureOne = try textureManager.texture(cgImage: cgImageOne)
+            inputTextureTwo = try textureManager.texture(cgImage: cgImageTwo)
             outputTexture = try textureManager.createMatchingTexture(texture: inputTextureOne)
         }
 
         func applyKernel() throws -> CGImage {
-            guard let commandBuffer = commandQueue.makeCommandBuffer() else {
-                throw MetalErrors.commandBufferCreationFailed
-            }
+            guard let commandBuffer = commandQueue.makeCommandBuffer() else { throw MetalErrors.commandBufferCreationFailed }
+            guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalErrors.encoderCreationFailed }
 
-            guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
-                throw MetalErrors.encoderCreationFailed
-            }
             encoder.setTexture(inputTextureOne, index: 0)
             encoder.setTexture(inputTextureTwo, index: 1)
             encoder.setTexture(outputTexture, index: 2)
-
             let gridSize = MTLSize(width: inputTextureOne.width, height: inputTextureOne.height, depth: 1)
             let threadGroupWidth = pipelineState.threadExecutionWidth
             let threadGroupHeight = pipelineState.maxTotalThreadsPerThreadgroup / threadGroupWidth
             let threadGroupSize = MTLSize(width: threadGroupWidth, height: threadGroupHeight, depth: 1)
 
             encoder.setComputePipelineState(pipelineState)
-
             if deviceSupportsNonuniformThreadgroups {
-                encoder.dispatchThreads(gridSize,
-                                        threadsPerThreadgroup: threadGroupSize)
+                encoder.dispatchThreads(gridSize, threadsPerThreadgroup: threadGroupSize)
             } else {
                 let threadGroupCount = MTLSize(width: (gridSize.width + threadGroupSize.width - 1) / threadGroupSize.width,
                                                height: (gridSize.height + threadGroupSize.height - 1) / threadGroupSize.height,
                                                depth: 1)
-                encoder.dispatchThreadgroups(threadGroupCount,
-                                             threadsPerThreadgroup: threadGroupSize)
+                encoder.dispatchThreadgroups(threadGroupCount, threadsPerThreadgroup: threadGroupSize)
             }
-
-            encoder.setComputePipelineState(pipelineState)
             encoder.endEncoding()
 
             commandBuffer.commit()
@@ -724,65 +606,47 @@ private final class PathDetectionKernel {
         }
     }
 
-    /// Filter the image to have white pixels be pixels that have a high confidence to be part of a line
-    /// and black to be those that are not.
     final class BinaryImageKernel {
         private let textureManager: TextureManager
         private let inputTexture: MTLTexture
         private let outputTexture: MTLTexture
-
         private var commandQueue: MTLCommandQueue
         private let pipelineState: MTLComputePipelineState
-
         private var deviceSupportsNonuniformThreadgroups: Bool
 
         init(cgImage: CGImage, library: MTLLibrary, textureManager: TextureManager) throws {
-            guard let commandQueue = library.device.makeCommandQueue() else {
-                throw MetalErrors.commandQueueCreationFailed
-            }
+            guard let commandQueue = library.device.makeCommandQueue() else { throw MetalErrors.commandQueueCreationFailed }
             self.commandQueue = commandQueue
-            deviceSupportsNonuniformThreadgroups = library.device.supportsFeatureSet(.iOS_GPUFamily4_v1)
+            deviceSupportsNonuniformThreadgroups = library.device.supportsFamily(.apple5)
             let constantValues = MTLFunctionConstantValues()
-
             constantValues.setConstantValue(&deviceSupportsNonuniformThreadgroups, type: .bool, index: 0)
             let function = try library.makeFunction(name: "threshold_filter", constantValues: constantValues)
             pipelineState = try library.device.makeComputePipelineState(function: function)
             self.textureManager = textureManager
-            let inputTexture = try textureManager.texture(cgImage: cgImage)
-            self.inputTexture = inputTexture
+            inputTexture = try textureManager.texture(cgImage: cgImage)
             outputTexture = try textureManager.createMatchingTexture(texture: inputTexture)
         }
 
         func getBinaryImage() throws -> CGImage {
-            guard let commandBuffer = commandQueue.makeCommandBuffer() else {
-                throw MetalErrors.commandBufferCreationFailed
-            }
+            guard let commandBuffer = commandQueue.makeCommandBuffer() else { throw MetalErrors.commandBufferCreationFailed }
+            guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalErrors.encoderCreationFailed }
 
-            guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
-                throw MetalErrors.encoderCreationFailed
-            }
             encoder.setTexture(inputTexture, index: 0)
             encoder.setTexture(outputTexture, index: 1)
-
             let gridSize = MTLSize(width: inputTexture.width, height: inputTexture.height, depth: 1)
             let threadGroupWidth = pipelineState.threadExecutionWidth
             let threadGroupHeight = pipelineState.maxTotalThreadsPerThreadgroup / threadGroupWidth
             let threadGroupSize = MTLSize(width: threadGroupWidth, height: threadGroupHeight, depth: 1)
 
             encoder.setComputePipelineState(pipelineState)
-
             if deviceSupportsNonuniformThreadgroups {
-                encoder.dispatchThreads(gridSize,
-                                        threadsPerThreadgroup: threadGroupSize)
+                encoder.dispatchThreads(gridSize, threadsPerThreadgroup: threadGroupSize)
             } else {
                 let threadGroupCount = MTLSize(width: (gridSize.width + threadGroupSize.width - 1) / threadGroupSize.width,
                                                height: (gridSize.height + threadGroupSize.height - 1) / threadGroupSize.height,
                                                depth: 1)
-                encoder.dispatchThreadgroups(threadGroupCount,
-                                             threadsPerThreadgroup: threadGroupSize)
+                encoder.dispatchThreadgroups(threadGroupCount, threadsPerThreadgroup: threadGroupSize)
             }
-
-            encoder.setComputePipelineState(pipelineState)
             encoder.endEncoding()
 
             commandBuffer.commit()
@@ -791,70 +655,53 @@ private final class PathDetectionKernel {
         }
     }
 
-    /// Remove pixels that do not vary enough from their surroundings and the average color
     final class FilterNearAverageKernel {
         private let textureManager: TextureManager
         private let inputTextureOne: MTLTexture
         private let inputTextureTwo: MTLTexture
         private let outputTexture: MTLTexture
         private var averageBrightness: Float
-
         private var commandQueue: MTLCommandQueue
         private let pipelineState: MTLComputePipelineState
         private var deviceSupportsNonuniformThreadgroups: Bool
 
         init(cgImageOne: CGImage, cgImageTwo: CGImage, averageBrightness: Float, library: MTLLibrary, textureManager: TextureManager) throws {
-            guard let commandQueue = library.device.makeCommandQueue() else {
-                throw MetalErrors.commandQueueCreationFailed
-            }
+            guard let commandQueue = library.device.makeCommandQueue() else { throw MetalErrors.commandQueueCreationFailed }
             self.commandQueue = commandQueue
-            deviceSupportsNonuniformThreadgroups = library.device.supportsFeatureSet(.iOS_GPUFamily4_v1)
+            deviceSupportsNonuniformThreadgroups = library.device.supportsFamily(.apple5)
             let constantValues = MTLFunctionConstantValues()
-
             constantValues.setConstantValue(&deviceSupportsNonuniformThreadgroups, type: .bool, index: 0)
             let function = try library.makeFunction(name: "differs_from_average_brightness", constantValues: constantValues)
             pipelineState = try library.device.makeComputePipelineState(function: function)
             self.textureManager = textureManager
-            let inputTextureOne = try textureManager.texture(cgImage: cgImageOne)
-            let inputTextureTwo = try textureManager.texture(cgImage: cgImageTwo)
-            self.inputTextureOne = inputTextureOne
-            self.inputTextureTwo = inputTextureTwo
+            inputTextureOne = try textureManager.texture(cgImage: cgImageOne)
+            inputTextureTwo = try textureManager.texture(cgImage: cgImageTwo)
             outputTexture = try textureManager.createMatchingTexture(texture: inputTextureOne)
             self.averageBrightness = averageBrightness
         }
 
         func applyKernel() throws -> CGImage {
-            guard let commandBuffer = commandQueue.makeCommandBuffer() else {
-                throw MetalErrors.commandBufferCreationFailed
-            }
+            guard let commandBuffer = commandQueue.makeCommandBuffer() else { throw MetalErrors.commandBufferCreationFailed }
+            guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalErrors.encoderCreationFailed }
 
-            guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
-                throw MetalErrors.encoderCreationFailed
-            }
             encoder.setTexture(inputTextureOne, index: 0)
             encoder.setTexture(inputTextureTwo, index: 1)
             encoder.setTexture(outputTexture, index: 2)
             encoder.setBytes(&averageBrightness, length: MemoryLayout<Float>.stride, index: 0)
-
             let gridSize = MTLSize(width: inputTextureOne.width, height: inputTextureOne.height, depth: 1)
             let threadGroupWidth = pipelineState.threadExecutionWidth
             let threadGroupHeight = pipelineState.maxTotalThreadsPerThreadgroup / threadGroupWidth
             let threadGroupSize = MTLSize(width: threadGroupWidth, height: threadGroupHeight, depth: 1)
 
             encoder.setComputePipelineState(pipelineState)
-
             if deviceSupportsNonuniformThreadgroups {
-                encoder.dispatchThreads(gridSize,
-                                        threadsPerThreadgroup: threadGroupSize)
+                encoder.dispatchThreads(gridSize, threadsPerThreadgroup: threadGroupSize)
             } else {
                 let threadGroupCount = MTLSize(width: (gridSize.width + threadGroupSize.width - 1) / threadGroupSize.width,
                                                height: (gridSize.height + threadGroupSize.height - 1) / threadGroupSize.height,
                                                depth: 1)
-                encoder.dispatchThreadgroups(threadGroupCount,
-                                             threadsPerThreadgroup: threadGroupSize)
+                encoder.dispatchThreadgroups(threadGroupCount, threadsPerThreadgroup: threadGroupSize)
             }
-
-            encoder.setComputePipelineState(pipelineState)
             encoder.endEncoding()
 
             commandBuffer.commit()
@@ -879,7 +726,7 @@ private final class PathDetectionKernel {
                 throw MetalErrors.commandQueueCreationFailed
             }
             self.commandQueue = commandQueue
-            deviceSupportsNonuniformThreadgroups = library.device.supportsFeatureSet(.iOS_GPUFamily4_v1)
+            deviceSupportsNonuniformThreadgroups = library.device.supportsFamily(.apple5)
             let constantValues = MTLFunctionConstantValues()
 
             constantValues.setConstantValue(&deviceSupportsNonuniformThreadgroups, type: .bool, index: 0)
@@ -944,8 +791,6 @@ private enum MetalErrors: Error {
 }
 
 extension CGImage {
-    /// Source: https://www.hackingwithswift.com/example-code/media/how-to-read-the-average-color-of-a-uiimage-using-ciareaaverage
-    /// We can use this extension to get the average color for the current image and then get its brightness
     var averageColor: UIColor? {
         let inputImage = CIImage(cgImage: self)
         let extentVector = CIVector(x: inputImage.extent.origin.x, y: inputImage.extent.origin.y, z: inputImage.extent.size.width, w: inputImage.extent.size.height)

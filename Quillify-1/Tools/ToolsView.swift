@@ -1,18 +1,7 @@
-//
-//  ToolsView.swift
-//  Quillify
-//
-//  Created by mi11ion on 19/3/24.
-//
-
 import SwiftUI
 
-struct LearnToolsView: View {
-    let toolFont: Font = .system(size: 80)
-
-    let toolColumns = [
-        GridItem(.adaptive(minimum: 150)),
-    ]
+struct ToolsView: View {
+    @ObservedObject var viewModel = ToolsViewModel()
 
     var body: some View {
         VStack {
@@ -30,108 +19,47 @@ struct LearnToolsView: View {
                         .bold()
                         .padding(.bottom, 40)
 
-                    LazyVGrid(columns: toolColumns, alignment: .leading, spacing: 5) {
-                        VStack(alignment: .leading) {
-                            Image(systemName: "hand.point.up").font(toolFont)
-                                .foregroundColor(.secondary)
-                                .frame(width: 100)
-                                .padding(.bottom, 20)
-                            Text("Касание")
-                                .font(.title2).bold()
-                                .foregroundColor(.accentColor)
-                                .padding(.bottom, 3)
-                            Text("Используйте аккуратно ок")
-                                .multilineTextAlignment(.leading)
-                                .foregroundColor(.primary)
-                        }
-                        .padding(.bottom, 40)
+                    LazyVGrid(columns: viewModel.toolColumns, alignment: .leading, spacing: 5) {
+                        ForEach(viewModel.tools) { tool in
+                            VStack(alignment: .leading) {
+                                if tool.imageName == "pencil.tip" {
+                                    ZStack {
+                                        Image(systemName: tool.imageName)
+                                            .font(viewModel.toolFont)
+                                            .foregroundColor(.secondary)
 
-                        VStack(alignment: .leading) {
-                            ZStack {
-                                Image(systemName: "pencil.tip")
-                                    .font(toolFont)
-                                    .foregroundColor(.secondary)
+                                        Image(systemName: tool.imageName)
+                                            .font(viewModel.toolFont)
+                                            .foregroundColor(tool.color)
+                                            .mask(VStack {
+                                                Rectangle()
+                                                    .foregroundColor(.white)
+                                                    .frame(height: 34)
 
-                                Image(systemName: "pencil.tip")
-                                    .font(toolFont)
-                                    .foregroundColor(Color.red)
-                                    .mask(VStack {
-                                        Rectangle()
-                                            .foregroundColor(.white)
-                                            .frame(height: 34)
+                                                Spacer()
+                                            })
+                                    }
+                                    .frame(width: 100)
+                                    .padding(.bottom, 20)
+                                } else {
+                                    Image(systemName: tool.imageName)
+                                        .font(viewModel.toolFont)
+                                        .foregroundColor(tool.color ?? .secondary)
+                                        .frame(width: 100)
+                                        .padding(.bottom, 20)
+                                }
 
-                                        Spacer()
-                                    })
+                                Text(tool.title)
+                                    .font(.title2).bold()
+                                    .foregroundColor(.accentColor)
+                                    .padding(.bottom, 3)
+
+                                Text(tool.description)
+                                    .multilineTextAlignment(.leading)
+                                    .foregroundColor(.primary)
                             }
-                            .frame(width: 100)
-                            .padding(.bottom, 20)
-
-                            Text("Ручка")
-                                .font(.title2).bold()
-                                .foregroundColor(.accentColor)
-                                .padding(.bottom, 3)
-
-                            Text("Нажмите на ручку, чтобы выбрать цвет")
-                                .multilineTextAlignment(.leading)
-                                .foregroundColor(.primary)
+                            .padding(.bottom, 40)
                         }
-                        .padding(.bottom, 40)
-
-                        VStack(alignment: .leading) {
-                            Image(systemName: "photo").font(toolFont)
-                                .foregroundColor(.secondary)
-                                .frame(width: 100)
-                                .padding(.bottom, 20)
-                            Text("Добавить фото")
-                                .font(.title2).bold()
-                                .foregroundColor(.accentColor)
-                                .padding(.bottom, 3)
-                            Text("Конвертируйте фото в цифровые чернила")
-                                .multilineTextAlignment(.leading)
-                                .foregroundColor(.primary)
-                        }
-                        .padding(.bottom, 40)
-
-                        VStack(alignment: .leading) {
-                            ZStack {
-                                Image(systemName: "scribble")
-                                    .font(toolFont)
-                                    .foregroundColor(.secondary)
-
-                                Image(systemName: "line.diagonal")
-                                    .font(toolFont)
-                                    .foregroundColor(Color.red)
-                            }
-                            .frame(width: 100)
-                            .padding(.bottom, 20)
-
-                            Text("Ластик")
-                                .font(.title2).bold()
-                                .foregroundColor(.accentColor)
-                                .padding(.bottom, 3)
-
-                            Text("Стирает вашу красоту, все понятно")
-                                .multilineTextAlignment(.leading)
-                                .foregroundColor(.primary)
-                        }
-                        .padding(.bottom, 40)
-
-                        VStack(alignment: .leading) {
-                            Image(systemName: "lasso").font(toolFont)
-                                .foregroundColor(.secondary)
-                                .frame(width: 100)
-                                .padding(.bottom, 20)
-
-                            Text("Лассо")
-                                .font(.title2).bold()
-                                .foregroundColor(.accentColor)
-                                .padding(.bottom, 3)
-
-                            Text("Незаменимая, крутая вещь")
-                                .multilineTextAlignment(.leading)
-                                .foregroundColor(.primary)
-                        }
-                        .padding(.bottom, 40)
                     }
                 }
                 .lineSpacing(10)

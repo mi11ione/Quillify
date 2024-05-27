@@ -173,7 +173,7 @@ enum SemanticColor: CaseIterable, Comparable {
     static func invertedBrightnessColor(color: UIColor) -> UIColor {
         var hue: CGFloat = 0, saturation: CGFloat = 0, brightness: CGFloat = 0, alpha: CGFloat = 0
         color.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
-        return UIColor(hue: hue, saturation: saturation, brightness: 1 - brightness, alpha: alpha)
+        return UIColor(hue: hue, saturation: saturation, brightness: brightness, alpha: alpha)
     }
 
     var pencilKitColor: UIColor {

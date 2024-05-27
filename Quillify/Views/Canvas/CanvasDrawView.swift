@@ -99,7 +99,7 @@ struct CanvasDrawView: View {
                                 }
                             } else {
                                 ProgressView()
-                                    .tint(.black)
+                                    .tint(colorScheme == .dark ? .black : .white)
                                     .padding(.horizontal, 70)
                                     .padding()
                                     .background(

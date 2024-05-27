@@ -2,9 +2,13 @@ import SwiftUI
 
 struct ToolsView: View {
     @ObservedObject var viewModel = ToolsViewModel()
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
 
     var body: some View {
         VStack(alignment: .leading) {
+            if horizontalSizeClass == .regular {
+                Spacer(minLength: 100)
+            }
             Text("Ваши инструменты")
                 .font(.title)
                 .bold()
@@ -52,5 +56,7 @@ struct ToolsView: View {
         .frame(maxWidth: 600)
         .padding()
         .padding(.horizontal, 10)
+        
+        Spacer(minLength: 80)
     }
 }

@@ -25,6 +25,7 @@ class WindowState: ObservableObject {
             }
         }
     }
+
     @Published var finalizeImage: UIImage? = nil
 
     var imageConversion: ImageConversion? = nil

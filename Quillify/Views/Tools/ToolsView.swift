@@ -56,7 +56,7 @@ struct ToolsView: View {
         .frame(maxWidth: 600)
         .padding()
         .padding(.horizontal, 10)
-        
+
         Spacer(minLength: 80)
     }
 }

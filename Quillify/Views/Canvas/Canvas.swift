@@ -57,30 +57,30 @@ class Canvas: UIViewController, PKCanvasViewDelegate, UIGestureRecognizerDelegat
             guard let self else { return }
             switch tool {
             case .pen:
-                self.imageRenderView?.isUserInteractionEnabled = false
-                self.canvasView.isUserInteractionEnabled = true
-                self.canvasView.drawingGestureRecognizer.isEnabled = true
-                self.canvasView.tool = PKInkingTool(.pen, color: self.state.currentColor.pencilKitColor)
+                imageRenderView?.isUserInteractionEnabled = false
+                canvasView.isUserInteractionEnabled = true
+                canvasView.drawingGestureRecognizer.isEnabled = true
+                canvasView.tool = PKInkingTool(.pen, color: self.state.currentColor.pencilKitColor)
             case .placePhoto:
-                self.imageRenderView?.isUserInteractionEnabled = true
-                self.canvasView.isUserInteractionEnabled = false
-                self.canvasView.drawingGestureRecognizer.isEnabled = false
-                self.canvasView.tool = PKInkingTool(.pen, color: self.state.currentColor.pencilKitColor)
+                imageRenderView?.isUserInteractionEnabled = true
+                canvasView.isUserInteractionEnabled = false
+                canvasView.drawingGestureRecognizer.isEnabled = false
+                canvasView.tool = PKInkingTool(.pen, color: self.state.currentColor.pencilKitColor)
             case .remove:
-                self.imageRenderView?.isUserInteractionEnabled = false
-                self.canvasView.isUserInteractionEnabled = true
-                self.canvasView.drawingGestureRecognizer.isEnabled = true
-                self.canvasView.tool = PKEraserTool(.vector)
+                imageRenderView?.isUserInteractionEnabled = false
+                canvasView.isUserInteractionEnabled = true
+                canvasView.drawingGestureRecognizer.isEnabled = true
+                canvasView.tool = PKEraserTool(.vector)
             case .selection:
-                self.imageRenderView?.isUserInteractionEnabled = false
-                self.canvasView.isUserInteractionEnabled = true
-                self.canvasView.drawingGestureRecognizer.isEnabled = true
-                self.canvasView.tool = PKLassoTool()
+                imageRenderView?.isUserInteractionEnabled = false
+                canvasView.isUserInteractionEnabled = true
+                canvasView.drawingGestureRecognizer.isEnabled = true
+                canvasView.tool = PKLassoTool()
             case .touch:
-                self.imageRenderView?.isUserInteractionEnabled = false
-                self.canvasView.isUserInteractionEnabled = true
-                self.canvasView.tool = PKInkingTool(.pen, color: self.state.currentColor.pencilKitColor)
-                self.canvasView.drawingGestureRecognizer.isEnabled = false
+                imageRenderView?.isUserInteractionEnabled = false
+                canvasView.isUserInteractionEnabled = true
+                canvasView.tool = PKInkingTool(.pen, color: self.state.currentColor.pencilKitColor)
+                canvasView.drawingGestureRecognizer.isEnabled = false
             }
         }
         cancellables.insert(changeToolCancellable)
@@ -88,8 +88,8 @@ class Canvas: UIViewController, PKCanvasViewDelegate, UIGestureRecognizerDelegat
         let colorCancellable = state.$currentColor.sink { [weak self] color in
             guard let self else { return }
             if self.state.currentTool == .pen {
-                self.canvasView.drawingGestureRecognizer.isEnabled = true
-                self.canvasView.tool = PKInkingTool(.pen, color: color.pencilKitColor)
+                canvasView.drawingGestureRecognizer.isEnabled = true
+                canvasView.tool = PKInkingTool(.pen, color: color.pencilKitColor)
             }
         }
 
@@ -102,12 +102,11 @@ class Canvas: UIViewController, PKCanvasViewDelegate, UIGestureRecognizerDelegat
     }
 
     override func viewDidLoad() {
-        
         let traits = [UITraitUserInterfaceStyle.self]
-        self.registerForTraitChanges(traits) { [weak self] (controller: UIViewController, traitCollection: UITraitCollection) in
+        registerForTraitChanges(traits) { [weak self] (_: UIViewController, _: UITraitCollection) in
             self?.updateCanvasBackgroundColor()
         }
-        
+
         super.viewDidLoad()
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
         tapGesture.delegate = self

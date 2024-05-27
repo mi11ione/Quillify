@@ -27,7 +27,9 @@ struct PhotoPickerView: View {
                 .padding()
 
                 VStack {
-                    Button(action: { withAnimation { windowState.photoMode = .cameraScan }}) {
+                    Button(action: {
+                        withAnimation { windowState.photoMode = .cameraScan }
+                    }) {
                         HStack {
                             Image(systemName: "viewfinder").font(.largeTitle)
                                 .frame(width: 50)
@@ -52,7 +54,9 @@ struct PhotoPickerView: View {
                     .accessibilityLabel(Text("Сканирование"))
                     .padding(.vertical, 5)
 
-                    Button(action: { withAnimation { windowState.photoMode = .library }}) {
+                    Button(action: {
+                        withAnimation { windowState.photoMode = .library }
+                    }) {
                         HStack(alignment: .center) {
                             Image(systemName: "photo.fill").font(.largeTitle)
                                 .frame(width: 50)
@@ -77,7 +81,9 @@ struct PhotoPickerView: View {
                     .accessibilityLabel(Text("Галерея"))
                     .padding(.vertical, 5)
 
-                    Button(action: { withAnimation { windowState.photoMode = .example }}) {
+                    Button(action: {
+                        withAnimation { windowState.photoMode = .example }
+                    }) {
                         HStack {
                             Image(systemName: "photo.on.rectangle.angled").font(.largeTitle)
                                 .frame(width: 50)

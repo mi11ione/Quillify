@@ -18,12 +18,24 @@ class WindowState: ObservableObject {
 
     @Published var isShowingPenColorPicker: Bool = false
     @Published var isShowingSelectionColorPicker: Bool = false
-    @Published var photoMode: PhotoMode = .welcome
+    @Published var photoMode: PhotoMode = .welcome {
+        didSet {
+            if photoMode != .welcome {
+                UserDefaults.standard.set(true, forKey: "hasSeenWelcome")
+            }
+        }
+    }
     @Published var finalizeImage: UIImage? = nil
 
     var imageConversion: ImageConversion? = nil
     var imageCancellable: AnyCancellable? = nil
     weak var canvas: Canvas? = nil
+
+    init() {
+        if UserDefaults.standard.bool(forKey: "hasSeenWelcome") {
+            photoMode = .none
+        }
+    }
 
     var hasSelection: Bool {
         selection != nil

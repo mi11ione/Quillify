@@ -6,6 +6,7 @@ struct CanvasDrawView: View {
     @Environment(\.colorScheme) var colorScheme
     @State private var showingFinalizeView: Bool = false
     @State private var showTools: Bool = true
+    @State private var isConversionComplete: Bool = false
 
     let colorColumns = [
         GridItem(.adaptive(minimum: 30)),
@@ -85,6 +86,7 @@ struct CanvasDrawView: View {
                             if imageConversion.isConversionFinished {
                                 Button(action: {
                                     windowState.placeImage()
+                                    isConversionComplete = true
                                 }) {
                                     Text("Разместить")
                                         .font(.headline)
@@ -97,11 +99,12 @@ struct CanvasDrawView: View {
                                 }
                             } else {
                                 ProgressView()
+                                    .tint(.black)
                                     .padding(.horizontal, 70)
                                     .padding()
                                     .background(
                                         RoundedRectangle(cornerRadius: 50)
-                                            .fill(Color.white)
+                                            .fill(Color.accentColor)
                                             .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 5)
                                     )
                             }
@@ -124,7 +127,7 @@ struct CanvasDrawView: View {
             VStack {
                 HStack {
                     Spacer()
-                    if showTools {
+                    if showTools && isConversionComplete {
                         Button(action: {
                             showTools = false
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -140,10 +143,10 @@ struct CanvasDrawView: View {
                         }) {
                             Image(systemName: "square.and.arrow.up")
                                 .font(.title)
-                                .foregroundColor(.black)
+                                .foregroundColor(colorScheme == .dark ? .white : .black)
                                 .padding()
                                 .padding(.horizontal, 3)
-                                .background(Color.white)
+                                .background(colorScheme == .dark ? Color(uiColor: UIColor.systemGray5) : Color.white)
                                 .cornerRadius(25)
                                 .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 2)
                         }

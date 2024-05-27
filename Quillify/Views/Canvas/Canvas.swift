@@ -102,6 +102,12 @@ class Canvas: UIViewController, PKCanvasViewDelegate, UIGestureRecognizerDelegat
     }
 
     override func viewDidLoad() {
+        
+        let traits = [UITraitUserInterfaceStyle.self]
+        self.registerForTraitChanges(traits) { [weak self] (controller: UIViewController, traitCollection: UITraitCollection) in
+            self?.updateCanvasBackgroundColor()
+        }
+        
         super.viewDidLoad()
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
         tapGesture.delegate = self
@@ -138,13 +144,6 @@ class Canvas: UIViewController, PKCanvasViewDelegate, UIGestureRecognizerDelegat
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         scrollToInitialOffsetIfRequired()
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            updateCanvasBackgroundColor()
-        }
     }
 
     private func scrollToInitialOffsetIfRequired() {
